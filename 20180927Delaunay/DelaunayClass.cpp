@@ -120,13 +120,11 @@ void DelaunayClass::getelement(vector<NodeClass> &_node, vector<ElementClass> &_
 				tmpelement[1].setnode(_boundary.nodelist[i], _element[nowtri].node[0], _element[nowtri].node[1]);
 				tmpelement[1].setneighbor(_element[nowtri].neighbor[2], nowtri, _element.size());
 
-				int neighbor1 = _element[nowtri].neighbor[1];
-				if (neighbor1 >= 0) {
-					_element[neighbor1].neighbor[_element[neighbor1].oppositenode(nowtri)] = _element.size();
-				}
-				int neighbor2 = _element[nowtri].neighbor[2];
-				if (neighbor2 >= 0) {
-					_element[neighbor2].neighbor[_element[neighbor2].oppositenode(nowtri)] = _element.size() + 1;
+				for (int k = 0; k < 2; k++) {
+					int neighbor = _element[nowtri].neighbor[1 + k];
+					if (neighbor >= 0) {
+						_element[neighbor].neighbor[_element[neighbor].oppositenode(nowtri)] = _element.size() + k;
+					}
 				}
 
 				_element[nowtri].setnode(_boundary.nodelist[i], _element[nowtri].node[1], _element[nowtri].node[2]);
@@ -141,8 +139,8 @@ void DelaunayClass::getelement(vector<NodeClass> &_node, vector<ElementClass> &_
 				break;
 			}
 			//辺上にある時
+			//*******************要修正********************
 			else {
-				//*******************要修正********************
 				/*int neighborelement = element[nowtri].neighbor[pos - 1];	//辺を挟む要素
 
 				if (neighborelement >= 0) {
@@ -179,7 +177,6 @@ void DelaunayClass::getelement(vector<NodeClass> &_node, vector<ElementClass> &_
 
 		//.....スワッピング.....
 		while (stack.size() > 0) {
-			//****************************要修正->領域をまたぐときはスワッピングしない*********************************
 			//スタック末尾の要素を取り出す
 			int nowstack = stack[stack.size() - 1];
 			stack.pop_back();
