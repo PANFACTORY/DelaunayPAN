@@ -22,6 +22,7 @@ public:
 
 	void setnode(int _node0, int _node1, int _node2);		//頂点の取り込み
 	void setneighbor(int _neighbor0, int _neighbor1, int _neighbor2);		//隣接要素番号の取り込み
+	void setside(bool _side0, bool _side1, bool _side2);	//境界辺を取り込む
 	void copy(ElementClass _originalelement);				//オブジェクトをコピーする
 
 	int inouton(int _nodenum, vector<NodeClass> _node);		//要素と点の位置関係を返す

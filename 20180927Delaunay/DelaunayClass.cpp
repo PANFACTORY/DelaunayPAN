@@ -90,6 +90,30 @@ void DelaunayClass::getelement(vector<NodeClass> &_node, vector<ElementClass> &_
 			else if (pos == 0) {
 				cout << "in->" << nowtri << "\n";
 				vector<ElementClass> tmpelement(2);
+
+				tmpelement[0].side[0] = _element[nowtri].side[1];
+				tmpelement[1].side[0] = _element[nowtri].side[2];
+				_element[nowtri].setside(_element[nowtri].side[0], false, false);
+
+				//‹«ŠE•Ó”»’è
+				if (i > 0) {
+					if (_element[nowtri].node[0] == _boundary.nodelist[i - 1]
+						|| (i == _boundary.nodelist.size() - 1 && _element[nowtri].node[0] == _boundary.nodelist[0])) {
+						tmpelement[0].side[1] = true;
+						tmpelement[1].side[2] = true;
+					}
+					if (_element[nowtri].node[1] == _boundary.nodelist[i - 1]
+						|| (i == _boundary.nodelist.size() - 1 && _element[nowtri].node[1] == _boundary.nodelist[0])) {
+						tmpelement[1].side[1] = true;
+						_element[nowtri].side[2] = true;
+					}
+					if (_element[nowtri].node[2] == _boundary.nodelist[i - 1]
+						|| (i == _boundary.nodelist.size() - 1 && _element[nowtri].node[2] == _boundary.nodelist[0])) {
+						_element[nowtri].side[1] = true;
+						tmpelement[0].side[2] = true;
+					}
+				}
+
 				tmpelement[0].setnode(_boundary.nodelist[i], _element[nowtri].node[2], _element[nowtri].node[0]);
 				tmpelement[0].setneighbor(_element[nowtri].neighbor[1], _element.size() + 1, nowtri);
 
@@ -168,7 +192,8 @@ void DelaunayClass::getelement(vector<NodeClass> &_node, vector<ElementClass> &_
 				double r1 = _node[_element[nowstack].node[0]].distance(_node[_element[neighbortri].node[neighbornode]]);
 				if (r0 > r1
 					&& _element[nowstack].inouton(_element[neighbortri].node[neighbornode], _node) == -1
-					&& _element[neighbortri].inouton(_element[nowstack].node[0], _node) == -(neighbornode + 1)) {
+					&& _element[neighbortri].inouton(_element[nowstack].node[0], _node) == -(neighbornode + 1)
+					&& _element[nowstack].side[0] == false) {
 
 					ElementClass tmpelement;
 					tmpelement.copy(_element[neighbortri]);
@@ -183,11 +208,22 @@ void DelaunayClass::getelement(vector<NodeClass> &_node, vector<ElementClass> &_
 						_element[neighbor2].neighbor[_element[neighbor2].oppositenode(nowstack)] = neighbortri;
 					}
 
+					_element[neighbortri].setside(tmpelement.side[(neighbornode + 2) % 3], _element[nowstack].side[1], false);
 					_element[neighbortri].setnode(_element[nowstack].node[0], tmpelement.node[neighbornode], _element[nowstack].node[2]);
 					_element[neighbortri].setneighbor(tmpelement.neighbor[(neighbornode + 2) % 3], _element[nowstack].neighbor[1], nowstack);
 
+					_element[nowstack].setside(tmpelement.side[(neighbornode + 1) % 3], false, _element[nowstack].side[2]);
 					_element[nowstack].setnode(_element[nowstack].node[0], _element[nowstack].node[1], tmpelement.node[neighbornode]);
 					_element[nowstack].setneighbor(tmpelement.neighbor[(neighbornode + 1) % 3], neighbortri, _element[nowstack].neighbor[2]);
+
+					//‹«ŠE•Ó”»’è
+					if (i > 0) {
+						if (_element[nowstack].node[2] == _boundary.nodelist[i - 1]
+							|| (i == _boundary.nodelist.size() - 1 && _element[nowstack].node[2] == _boundary.nodelist[0])) {
+							_element[nowstack].side[1] = true;
+							_element[neighbortri].side[2] = true;
+						}
+					}
 
 					stack.push_back(nowstack);
 					stack.push_back(neighbortri);
