@@ -139,39 +139,106 @@ void DelaunayClass::getelement(vector<NodeClass> &_node, vector<ElementClass> &_
 				break;
 			}
 			//ï”è„Ç…Ç†ÇÈéû
-			//*******************óvèCê≥********************
 			else {
-				/*int neighborelement = element[nowtri].neighbor[pos - 1];	//ï”Çã≤Çﬁóvëf
+				cout << "on->" << nowtri << "\n";
+				int nownode = pos - 1;
+				int neitri = _element[nowtri].neighbor[nownode];
+				//ï”Çã≤ÇÒÇ≈ó◊ê⁄óvëfÇ™ë∂ç›Ç∑ÇÈÇ∆Ç´
+				if (neitri != -1) {
+					int neinode = _element[neitri].oppositenode(nowtri);
+					vector<ElementClass> tmptri(4);
+					tmptri[0].copy(_element[nowtri]);			
+					tmptri[1].copy(_element[neitri]);
 
-				if (neighborelement >= 0) {
-					int neighbornode = element[neighborelement].oppositenode(nowtri);	//ï”Çã≤Çﬁí∏ì_
+					_element[nowtri].setnode(_boundary.nodelist[i], tmptri[0].node[nownode], tmptri[0].node[(nownode + 1) % 3]);
+					_element[nowtri].setneighbor(tmptri[0].neighbor[(nownode + 2) % 3], neitri, _element.size());
+					_element[nowtri].setside(tmptri[0].side[(nownode + 2) % 3], false, false);
 
-					vector<ElementClass> tmpelement(2);
-					tmpelement[0].setnode(i, element[neighborelement].node[neighbornode], element[nowtri].node[(pos + 1) % 3]);
-					tmpelement[0].setneighbor(element[neighborelement].neighbor[(neighbornode + 2) % 3], element.size() + 1, neighborelement);
+					_element[neitri].setnode(_boundary.nodelist[i], tmptri[0].node[(nownode + 1) % 3], tmptri[1].node[neinode]);
+					_element[neitri].setneighbor(tmptri[1].neighbor[(neinode + 1) % 3], _element.size() + 1, nowtri);
+					_element[neitri].setside(tmptri[1].side[(neinode + 1) % 3], false, false);
 
-					tmpelement[1].setnode(i, element[nowtri].node[(pos + 1) % 3], element[nowtri].node[pos - 1]);
-					tmpelement[1].setneighbor(element[nowtri].neighbor[pos % 3], nowtri, element.size());
+					tmptri[2].setnode(_boundary.nodelist[i], tmptri[0].node[(nownode + 2) % 3], tmptri[0].node[nownode]);
+					tmptri[2].setneighbor(tmptri[0].neighbor[(nownode + 1) % 3], nowtri, _element.size() + 1);
+					tmptri[2].side[0] = tmptri[0].side[(nownode + 1) % 3];
 
-					for (int k = 0; k < 3; k++) {
-						if (element[element[nowtri].neighbor[(pos + 1) % 3]].neighbor[k] == nowtri) {
-							element[element[nowtri].neighbor[(pos + 1) % 3]].neighbor[k] = element.size() + 1;
+					tmptri[3].setnode(_boundary.nodelist[i], tmptri[1].node[neinode], tmptri[0].node[(nownode + 2) % 3]);
+					tmptri[3].setneighbor(tmptri[1].neighbor[(neinode + 2) % 3], _element.size(), neitri);
+					tmptri[3].side[0] = tmptri[1].side[(neinode + 2) % 3];
+
+					int nei1 = tmptri[0].neighbor[(nownode + 1) % 3];
+					if (nei1 != -1) {
+						_element[nei1].neighbor[_element[nei1].oppositenode(nowtri)] = _element.size();
+					}
+
+					int nei2 = tmptri[1].neighbor[(neinode + 2) % 3];
+					if (nei2 != -1) {
+						_element[nei2].neighbor[_element[nei2].oppositenode(neitri)] = _element.size() + 1;
+					}
+
+					if (i > 0) {
+						if (_element[nowtri].node[1] == _boundary.nodelist[i - 1] 
+							|| (i == _boundary.nodelist.size() - 1 && _element[nowtri].node[1] == _boundary.nodelist[0])) {
+							tmptri[2].side[1] = true;
+							_element[nowtri].side[2] = true;
 						}
-						if (element[element[neighborelement].neighbor[(neighbornode + 2) % 3]].neighbor[k] == neighborelement) {
-							element[element[neighborelement].neighbor[(neighbornode + 2) % 3]].neighbor[k] = element.size();
+						if (_element[neitri].node[1] == _boundary.nodelist[i - 1]
+							|| (i == _boundary.nodelist.size() - 1 && _element[neitri].node[1] == _boundary.nodelist[0])) {
+							_element[nowtri].side[1] = true;
+							_element[neitri].side[2] = true;
+						}
+						if (tmptri[2].node[1] == _boundary.nodelist[i - 1]
+							|| (i == _boundary.nodelist.size() - 1 && tmptri[2].node[1] == _boundary.nodelist[0])) {
+							tmptri[2].side[2] = true;
+							tmptri[3].side[1] = true;
+						}
+						if (tmptri[3].node[1] == _boundary.nodelist[i - 1]
+							|| (i == _boundary.nodelist.size() - 1 && tmptri[2].node[1] == _boundary.nodelist[0])) {
+							tmptri[3].side[2] = true;
+							_element[neitri].side[1] = true;
 						}
 					}
 
-					element[nowtri].setnode(i, element[nowtri].node[pos - 1], element[nowtri].node[pos % 3]);
-					element[nowtri].setneighbor(element[nowtri].neighbor[(pos + 1) % 3], neighborelement, element.size() + 1);
-
-					element[neighborelement].setnode(i, element[nowtri].node[pos % 3], element[neighborelement].node[neighbornode]);
-					element[neighborelement].setneighbor(element[neighborelement].neighbor[(neighbornode + 1) % 3], neighborelement, element.size());
-
-					element.push_back(tmpelement[0]);
-					element.push_back(tmpelement[1]);
+					_element.push_back(tmptri[2]);
+					_element.push_back(tmptri[3]);
 				}
-				break;*/
+				//ï”Çã≤ÇÒÇ≈ó◊ê⁄óvëfÇ™ë∂ç›ÇµÇ»Ç¢Ç∆Ç´
+				else {
+					vector<ElementClass> tmptri(2);
+					tmptri[0].copy(_element[nowtri]);
+
+					_element[nowtri].setnode(_boundary.nodelist[i], tmptri[0].node[nownode], tmptri[0].node[(nownode + 1) % 3]);
+					_element[nowtri].setneighbor(tmptri[0].neighbor[(nownode + 2) % 3], -1, _element.size());
+					_element[nowtri].setside(tmptri[0].side[(nownode + 2) % 3], false, false);
+
+					tmptri[1].setnode(_boundary.nodelist[i], tmptri[0].node[(nownode + 2) % 3], tmptri[0].node[nownode]);
+					tmptri[1].setneighbor(tmptri[0].neighbor[(nownode + 1) % 3], nowtri, -1);
+					tmptri[1].setside(tmptri[0].side[(nownode + 1) % 3], false, false);
+
+					int nei1 = tmptri[0].neighbor[(nownode + 1) % 3];
+					if (nei1 != -1) {
+						_element[nei1].neighbor[_element[nei1].oppositenode(nowtri)] = _element.size();
+					}
+
+					if (i > 0) {
+						if (_element[nowtri].node[1] == _boundary.nodelist[i - 1]
+							|| (i == _boundary.nodelist.size() - 1 && _element[nowtri].node[1] == _boundary.nodelist[0])) {
+							tmptri[1].side[1] = true;
+							_element[nowtri].side[2] = true;
+						}
+						if (_element[nowtri].node[2] == _boundary.nodelist[i - 1]
+							|| (i == _boundary.nodelist.size() - 1 && _element[nowtri].node[2] == _boundary.nodelist[0])) {
+							_element[nowtri].side[1] = true;
+						}
+						if (tmptri[1].node[1] == _boundary.nodelist[i - 1]
+							|| (i == _boundary.nodelist.size() - 1 && tmptri[1].node[1] == _boundary.nodelist[0])) {
+							tmptri[1].side[2] = true;
+						}
+					}
+
+					_element.push_back(tmptri[1]);
+				}
+				break;
 			}
 		}
 
