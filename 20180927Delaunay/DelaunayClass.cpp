@@ -13,7 +13,9 @@
 #include <math.h>
 #include <iostream>
 
-#define ADDITIONALNODENUM	3					//細分割数
+#define ADDITIONALNODENUM1	500				//細分割数
+#define ADDITIONALNODENUM2	0					//細分割数
+
 
 
 DelaunayClass::DelaunayClass(){}
@@ -77,7 +79,7 @@ void DelaunayClass::getelement(vector<NodeClass> &_node, vector<ElementClass> &_
 	for (int j = 0; j < _element.size(); j++) {
 		int pos = _element[nowtri].inouton(_nodenum, _node);
 		//要素外にある時
-		if (pos < 0) {
+		if (pos < 0 || _element[nowtri].active == false) {
 			if (_element[nowtri].neighbor[abs(pos) - 1] >= 0) {
 				nowtri = _element[nowtri].neighbor[abs(pos) - 1];
 			}
@@ -304,9 +306,9 @@ void DelaunayClass::getboundary(vector<NodeClass> &_node, vector<ElementClass> &
 
 
 //*****************************************************************************
-//境界外部の要素を削除
+//境界外部の要素を無効化
 //*****************************************************************************
-void DelaunayClass::deleteelement(vector<NodeClass> &_node, vector<ElementClass> &_element, BoundaryClass _boundary) {
+void DelaunayClass::deactivate(vector<NodeClass> &_node, vector<ElementClass> &_element, BoundaryClass _boundary) {
 	for (int i = _element.size() - 1; i >= 0; i--) {
 		int nodeorder[3];
 		for (int j = 0; j < 3; j++) {
@@ -317,7 +319,7 @@ void DelaunayClass::deleteelement(vector<NodeClass> &_node, vector<ElementClass>
 			|| (nodeorder[1] < nodeorder[2] && nodeorder[2] < nodeorder[0])
 			|| (nodeorder[2] < nodeorder[0] && nodeorder[0] < nodeorder[1]))
 			&& (nodeorder[0] >= 0 && nodeorder[1] >= 0 && nodeorder[2] >= 0)) {
-			_element.erase(_element.begin() + i);
+			_element[i].active = false;
 		}
 	}
 }
@@ -347,27 +349,59 @@ void DelaunayClass::sortelement(vector<ElementClass> &_element) {
 //内部点の生成
 //*****************************************************************************
 void DelaunayClass::getinternalelement(vector<NodeClass> &_node, vector<ElementClass> &_element) {
-	for (int i = 0; i < ADDITIONALNODENUM; i++) {
-		//最大角を持つ要素とその節点番号を探索
+	//面積の大きい要素を重心で分割
+	for (int i = 0; i < ADDITIONALNODENUM1; i++) {
+		double maxspace = _element[0].space(_node);
+		int maxelement = 0;
+		for (int j = 1; j < _element.size(); j++) {
+			if (maxspace < _element[j].space(_node) && _element[j].active == true) {
+				maxspace = _element[j].space(_node);
+				maxelement = j;
+			}
+		}
+		NodeClass addnode;
+		addnode.x = (_node[_element[maxelement].node[0]].x + _node[_element[maxelement].node[1]].x + _node[_element[maxelement].node[2]].x) / 3.0;
+		addnode.y = (_node[_element[maxelement].node[0]].y + _node[_element[maxelement].node[1]].y + _node[_element[maxelement].node[2]].y) / 3.0;
+		_node.push_back(addnode);
+
+		//追加した節点で要素分割
+		getelement(_node, _element, -2, _node.size() - 1, -2);
+	}
+	//ひずみの大きい要素を分割
+	for (int i = 0; i < ADDITIONALNODENUM2; i++) {
+		//追加する節点を生成
 		double maxangle = _element[0].angle[0];
 		int maxelement = 0, maxnode = 0;
 		for (int j = 0; j < _element.size(); j++) {
 			for (int k = 0; k < 3; k++) {
-				if (maxangle < _element[j].angle[k]) {
+				if (maxangle < _element[j].angle[k] && _element[j].active == true) {
 					maxangle = _element[j].angle[k];
 					maxelement = j;
 					maxnode = k;
 				}
 			}
 		}
-
-		//追加する節点を生成
+		
 		NodeClass addnode;
-		addnode.x = 0.5*(_node[_element[maxelement].node[(maxnode + 1) % 3]].x + _node[_element[maxelement].node[(maxnode + 2) % 3]].x);
-		addnode.y = 0.5*(_node[_element[maxelement].node[(maxnode + 1) % 3]].y + _node[_element[maxelement].node[(maxnode + 2) % 3]].y);
+		double a = _node[_element[maxelement].node[maxnode]].distance(_node[_element[maxelement].node[(maxnode + 1) % 3]]);
+		double b = _node[_element[maxelement].node[maxnode]].distance(_node[_element[maxelement].node[(maxnode + 2) % 3]]);
+		addnode.x = (b * _node[_element[maxelement].node[(maxnode + 1) % 3]].x + a * _node[_element[maxelement].node[(maxnode + 2) % 3]].x) / (a + b);
+		addnode.y = (b * _node[_element[maxelement].node[(maxnode + 1) % 3]].y + a * _node[_element[maxelement].node[(maxnode + 2) % 3]].y) / (a + b);
 		_node.push_back(addnode);
 
 		//追加した節点で要素分割
 		getelement(_node, _element, -2, _node.size() - 1, -2);
+	}
+}
+
+
+//*****************************************************************************
+//無効化された要素を削除
+//*****************************************************************************
+void DelaunayClass::deleteelement(vector<ElementClass> &_element) {
+	for (int i = _element.size() - 1; i >= 0; i--) {
+		if (_element[i].active == false) {
+			_element.erase(_element.begin() + i);
+		}
 	}
 }

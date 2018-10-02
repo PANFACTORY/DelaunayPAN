@@ -19,6 +19,8 @@ ElementClass::ElementClass(){
 	neighbor[0] = -1;				//隣接要素番号は始めは無し
 	neighbor[1] = -1;
 	neighbor[2] = -1;
+
+	active = true;
 }
 
 
@@ -73,24 +75,25 @@ void ElementClass::copy(ElementClass _originalelement) {
 //	return i+1		：i番目の辺上
 //	return 0		：三角形内部
 //*****************************************************************************
-
-//**************************要修正*********************************************
-
 int ElementClass::inouton(int _nodenum, vector<NodeClass> _node) {
 	double vecpro0 = _node[node[0]].vecpro(_node[node[1]], _node[_nodenum]);
 	double vecpro1 = _node[node[1]].vecpro(_node[node[2]], _node[_nodenum]);
 	double vecpro2 = _node[node[2]].vecpro(_node[node[0]], _node[_nodenum]);
 
+	double vecpro3 = _node[node[0]].vecpro(_node[node[2]], _node[_nodenum]);
+	double vecpro4 = _node[node[1]].vecpro(_node[node[0]], _node[_nodenum]);
+	double vecpro5 = _node[node[2]].vecpro(_node[node[1]], _node[_nodenum]);
+
 	//辺2外
-	if (vecpro0 < 0.0 && vecpro2 > 0.0) {
+	if ((vecpro0 < 0.0 && vecpro2 > 0.0) || (fabs(vecpro0) <= DBL_EPSILON && vecpro5 > 0.0)) {
 		return -3;
 	}
 	//辺0外
-	else if (vecpro1 < 0.0 && vecpro0 > 0.0) {
+	else if ((vecpro1 < 0.0 && vecpro0 > 0.0) || (fabs(vecpro1) <= DBL_EPSILON && vecpro3 > 0.0)) {
 		return -1;
 	}
 	//辺1外
-	else if (vecpro2 < 0.0 && vecpro1 > 0.0) {
+	else if ((vecpro2 < 0.0 && vecpro1 > 0.0) || (fabs(vecpro2) <= DBL_EPSILON && vecpro4 > 0.0)) {
 		return -2;
 	}
 	//辺2上
@@ -127,6 +130,14 @@ int ElementClass::oppositenode(int _elementname) {
 //*****************************************************************************
 void ElementClass::getangle(vector<NodeClass> _node) {
 	for (int i = 0; i < 3; i++) {
-		angle[i] = _node[node[i]].vecpro(_node[node[(i + 1) % 3]], _node[node[(i + 2) % 3]]) / (_node[node[i]].distance(_node[node[(i + 1) % 3]]) * _node[node[i]].distance(_node[node[(i + 2) % 3]]));
+		angle[i] = _node[node[i]].innpro(_node[node[(i + 1) % 3]], _node[node[(i + 2) % 3]]) / (_node[node[i]].distance(_node[node[(i + 1) % 3]]) * _node[node[i]].distance(_node[node[(i + 2) % 3]]));
 	}
+}
+
+
+//*****************************************************************************
+//要素の面積を返す
+//*****************************************************************************
+double ElementClass::space(vector<NodeClass> _node) {
+	return 0.5*_node[node[0]].vecpro(_node[node[1]], _node[node[2]]);
 }

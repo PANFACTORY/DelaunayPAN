@@ -19,5 +19,6 @@ public:
 
 	double distance(NodeClass _node);					//引数のノードとの距離を返す
 	double vecpro(NodeClass _node0, NodeClass _node1);	//自身から_node0へのベクトルと_node1へのベクトルの外積
+	double innpro(NodeClass _node0, NodeClass _node1);	//自身から_node0へのベクトルと_node1へのベクトルの内積
 };
 

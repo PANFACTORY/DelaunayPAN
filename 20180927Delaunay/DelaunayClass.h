@@ -25,7 +25,8 @@ public:
 	void deletesupertriangle(vector<NodeClass> &_node, vector<ElementClass> &_element);
 	void getelement(vector<NodeClass> &_node, vector<ElementClass> &_element, int _nodenump1, int _nodenum, int _nodenumm1);
 	void getboundary(vector<NodeClass> &_node, vector<ElementClass> &_element, BoundaryClass _boundary);
-	void deleteelement(vector<NodeClass> &_node, vector<ElementClass> &_element, BoundaryClass _boundary);
+	void deactivate(vector<NodeClass> &_node, vector<ElementClass> &_element, BoundaryClass _boundary);
+	void deleteelement(vector<ElementClass> &_element);
 	void sortelement(vector<ElementClass> &_element);
 	void getinternalelement(vector<NodeClass> &_node, vector<ElementClass> &_element);
 };

@@ -31,3 +31,11 @@ double NodeClass::distance(NodeClass _node) {
 double NodeClass::vecpro(NodeClass _node0, NodeClass _node1) {
 	return (_node0.x - x)*(_node1.y - y) - (_node0.y - y)*(_node1.x - x);
 }
+
+
+//*****************************************************************************
+//自身から_node0へのベクトルと_node1へのベクトルの外積
+//*****************************************************************************
+double NodeClass::innpro(NodeClass _node0, NodeClass _node1) {
+	return (_node0.x - x)*(_node1.x - x) + (_node1.y - y)*(_node0.y - y);
+}
