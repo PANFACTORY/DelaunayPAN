@@ -18,6 +18,7 @@ public:
 
 	int node[3];											//’¸“_‚Ìß“_”Ô†
 	int neighbor[3];										//—×Ú—v‘f”Ô†
+	double angle[3];										//’¸Šp
 	bool side[3];											//true:•Ó‚ª‹«ŠE		false:•Ó‚ª”ñ‹«ŠE
 
 	void setnode(int _node0, int _node1, int _node2);		//’¸“_‚Ìæ‚è‚İ
@@ -27,5 +28,7 @@ public:
 
 	int inouton(int _nodenum, vector<NodeClass> _node);		//—v‘f‚Æ“_‚ÌˆÊ’uŠÖŒW‚ğ•Ô‚·
 	int oppositenode(int _elementname);						//w’è‚³‚ê‚½—v‘f‚Æ‚ÌˆÊ’uŠÖŒW‚ğ•Ô‚·
+
+	void getangle(vector<NodeClass> _node);					//’¸Šp‚ğŒvZ
 };
 

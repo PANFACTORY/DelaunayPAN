@@ -8,6 +8,7 @@
 #include "pch.h"
 #include "ElementClass.h"
 #include <float.h>
+#include <cmath>
 
 
 ElementClass::ElementClass(){
@@ -118,4 +119,14 @@ int ElementClass::oppositenode(int _elementname) {
 		}
 	}
 	return -1;
+}
+
+
+//*****************************************************************************
+//’¸Šp‚ðŒvŽZ
+//*****************************************************************************
+void ElementClass::getangle(vector<NodeClass> _node) {
+	for (int i = 0; i < 3; i++) {
+		angle[i] = _node[node[i]].vecpro(_node[node[(i + 1) % 3]], _node[node[(i + 2) % 3]]) / (_node[node[i]].distance(_node[node[(i + 1) % 3]]) * _node[node[i]].distance(_node[node[(i + 2) % 3]]));
+	}
 }
