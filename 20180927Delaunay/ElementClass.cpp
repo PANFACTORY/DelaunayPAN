@@ -11,6 +11,10 @@
 #include <cmath>
 
 
+#define SELFEPS0 DBL_EPSILON*1.0
+#define SELFEPS1 DBL_EPSILON*1.0
+
+
 ElementClass::ElementClass(){
 	side[0] = false;				//始め点は全て境界ではないものとする
 	side[1] = false;
@@ -85,27 +89,27 @@ int ElementClass::inouton(int _nodenum, vector<NodeClass> _node) {
 	double vecpro5 = _node[node[2]].vecpro(_node[node[1]], _node[_nodenum]);
 
 	//辺2外
-	if ((vecpro0 < 0.0 && vecpro2 > 0.0) || (fabs(vecpro0) <= DBL_EPSILON && vecpro5 > 0.0)) {
+	if ((vecpro0 < 0.0 && vecpro2 > 0.0) || (fabs(vecpro0) <= SELFEPS0 && vecpro5 > 0.0)) {
 		return -3;
 	}
 	//辺0外
-	else if ((vecpro1 < 0.0 && vecpro0 > 0.0) || (fabs(vecpro1) <= DBL_EPSILON && vecpro3 > 0.0)) {
+	else if ((vecpro1 < 0.0 && vecpro0 > 0.0) || (fabs(vecpro1) <= SELFEPS0 && vecpro3 > 0.0)) {
 		return -1;
 	}
 	//辺1外
-	else if ((vecpro2 < 0.0 && vecpro1 > 0.0) || (fabs(vecpro2) <= DBL_EPSILON && vecpro4 > 0.0)) {
+	else if ((vecpro2 < 0.0 && vecpro1 > 0.0) || (fabs(vecpro2) <= SELFEPS0 && vecpro4 > 0.0)) {
 		return -2;
 	}
 	//辺2上
-	else if (fabs(vecpro0) <= DBL_EPSILON) {
+	else if (fabs(vecpro0) <= SELFEPS1) {
 		return 3;
 	}
 	//辺0上
-	else if (fabs(vecpro1) <= DBL_EPSILON) {
+	else if (fabs(vecpro1) <= SELFEPS1) {
 		return 1;
 	}
 	//辺1上
-	else if (fabs(vecpro2) <= DBL_EPSILON) {
+	else if (fabs(vecpro2) <= SELFEPS1) {
 		return 2;
 	}
 	return 0;

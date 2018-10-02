@@ -13,9 +13,8 @@
 #include <math.h>
 #include <iostream>
 
-#define ADDITIONALNODENUM1	500				//細分割数
-#define ADDITIONALNODENUM2	0					//細分割数
-
+#define ADDITIONALNODENUM1	100				//細分割数
+#define ADDITIONALNODENUM2	8					//細分割数
 
 
 DelaunayClass::DelaunayClass(){}
@@ -144,7 +143,7 @@ void DelaunayClass::getelement(vector<NodeClass> &_node, vector<ElementClass> &_
 			int nownode = pos - 1;
 			int neitri = _element[nowtri].neighbor[nownode];
 			//辺を挟んで隣接要素が存在するとき
-			if (neitri != -1) {
+			if (neitri != -1 && _element[neitri].active == true) {
 				int neinode = _element[neitri].oppositenode(nowtri);
 				vector<ElementClass> tmptri(4);
 				tmptri[0].copy(_element[nowtri]);
@@ -193,6 +192,13 @@ void DelaunayClass::getelement(vector<NodeClass> &_node, vector<ElementClass> &_
 					_element[neitri].side[1] = true;
 				}
 
+				if (tmptri[0].side[nownode] == true) {
+					_element[nowtri].side[1] = true;
+					_element[neitri].side[2] = true;
+					tmptri[2].side[2] = true;
+					tmptri[3].side[1] = true;
+				}
+
 				_element[nowtri].getangle(_node);
 				_element[neitri].getangle(_node);
 				tmptri[2].getangle(_node);
@@ -230,6 +236,11 @@ void DelaunayClass::getelement(vector<NodeClass> &_node, vector<ElementClass> &_
 					tmptri[1].side[2] = true;
 				}
 
+				if (tmptri[0].side[nownode] == true) {
+					_element[nowtri].side[1] = true;
+					tmptri[1].side[2] = true;
+				}
+
 				_element[nowtri].getangle(_node);
 				tmptri[1].getangle(_node);
 
@@ -247,7 +258,7 @@ void DelaunayClass::getelement(vector<NodeClass> &_node, vector<ElementClass> &_
 		//スタックから取り出した要素に隣接する要素を取得
 		int neighbortri = _element[nowstack].neighbor[0];
 		//隣接する三角形要素が存在するとき
-		if (neighbortri >= 0) {
+		if (neighbortri >= 0 && _element[neighbortri].active == true) {
 			int neighbornode = _element[neighbortri].oppositenode(nowstack);
 			double r0 = _node[_element[nowstack].node[1]].distance(_node[_element[nowstack].node[2]]);
 			double r1 = _node[_element[nowstack].node[0]].distance(_node[_element[neighbortri].node[neighbornode]]);
@@ -374,7 +385,7 @@ void DelaunayClass::getinternalelement(vector<NodeClass> &_node, vector<ElementC
 		int maxelement = 0, maxnode = 0;
 		for (int j = 0; j < _element.size(); j++) {
 			for (int k = 0; k < 3; k++) {
-				if (maxangle < _element[j].angle[k] && _element[j].active == true) {
+				if (maxangle > _element[j].angle[k] && _element[j].active == true) {
 					maxangle = _element[j].angle[k];
 					maxelement = j;
 					maxnode = k;
