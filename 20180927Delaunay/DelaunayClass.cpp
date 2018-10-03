@@ -13,8 +13,8 @@
 #include <math.h>
 #include <iostream>
 
-#define ADDITIONALNODENUM1	100				//細分割数
-#define ADDITIONALNODENUM2	8					//細分割数
+#define ADDITIONALNODENUM1	200				//細分割数
+#define ADDITIONALNODENUM2	50					//細分割数
 
 
 DelaunayClass::DelaunayClass(){}
@@ -65,196 +65,195 @@ void DelaunayClass::deletesupertriangle(vector<NodeClass> &_node, vector<Element
 
 
 //*****************************************************************************
-//DelaunayTriangulationによる要素生成
+//要素内に点がきたとき
 //*****************************************************************************
-void DelaunayClass::getelement(vector<NodeClass> &_node, vector<ElementClass> &_element, int _nodenump1, int _nodenum, int _nodenumm1) {
-	int nowtri = 0;
-	if (_element.size() > 0) {
-		nowtri = _element.size() - 1;
-	}
+void DelaunayClass::getelementin(vector<NodeClass> &_node, vector<ElementClass> &_element, int _nowtri, int _nodenump1, int _nodenum, int _nodenumm1) {
+	vector<int> stack;
 	
-	vector<int> stack;													//スワッピング対象の要素配列
-	//.....包含三角形の探索.....
-	for (int j = 0; j < _element.size(); j++) {
-		int pos = _element[nowtri].inouton(_nodenum, _node);
-		//要素外にある時
-		if (pos < 0 || _element[nowtri].active == false) {
-			if (_element[nowtri].neighbor[abs(pos) - 1] >= 0) {
-				nowtri = _element[nowtri].neighbor[abs(pos) - 1];
-			}
-			else {
-				cout << "Out of triangle Error!\n";
-			}
-		}
-		//要素内にある時
-		else if (pos == 0) {
-			cout << "in->" << nowtri << "\n";
-			vector<ElementClass> tmpelement(2);
+	vector<ElementClass> tmpelement(2);
 
-			tmpelement[0].side[0] = _element[nowtri].side[1];
-			tmpelement[1].side[0] = _element[nowtri].side[2];
-			_element[nowtri].setside(_element[nowtri].side[0], false, false);
+	tmpelement[0].side[0] = _element[_nowtri].side[1];
+	tmpelement[1].side[0] = _element[_nowtri].side[2];
+	_element[_nowtri].setside(_element[_nowtri].side[0], false, false);
 
-			//境界辺判定
-			if (_element[nowtri].node[0] == _nodenumm1 || _element[nowtri].node[0] == _nodenump1) {
-				tmpelement[0].side[1] = true;
-				tmpelement[1].side[2] = true;
-			}
-			if (_element[nowtri].node[1] == _nodenumm1 || _element[nowtri].node[1] == _nodenump1) {
-				tmpelement[1].side[1] = true;
-				_element[nowtri].side[2] = true;
-			}
-			if (_element[nowtri].node[2] == _nodenumm1 || _element[nowtri].node[2] == _nodenump1) {
-				_element[nowtri].side[1] = true;
-				tmpelement[0].side[2] = true;
-			}
+	//境界辺判定
+	if (_element[_nowtri].node[0] == _nodenumm1 || _element[_nowtri].node[0] == _nodenump1) {
+		tmpelement[0].side[1] = true;
+		tmpelement[1].side[2] = true;
+	}
+	if (_element[_nowtri].node[1] == _nodenumm1 || _element[_nowtri].node[1] == _nodenump1) {
+		tmpelement[1].side[1] = true;
+		_element[_nowtri].side[2] = true;
+	}
+	if (_element[_nowtri].node[2] == _nodenumm1 || _element[_nowtri].node[2] == _nodenump1) {
+		_element[_nowtri].side[1] = true;
+		tmpelement[0].side[2] = true;
+	}
 
-			tmpelement[0].setnode(_nodenum, _element[nowtri].node[2], _element[nowtri].node[0]);
-			tmpelement[0].setneighbor(_element[nowtri].neighbor[1], _element.size() + 1, nowtri);
+	tmpelement[0].setnode(_nodenum, _element[_nowtri].node[2], _element[_nowtri].node[0]);
+	tmpelement[0].setneighbor(_element[_nowtri].neighbor[1], _element.size() + 1, _nowtri);
 
-			tmpelement[1].setnode(_nodenum, _element[nowtri].node[0], _element[nowtri].node[1]);
-			tmpelement[1].setneighbor(_element[nowtri].neighbor[2], nowtri, _element.size());
+	tmpelement[1].setnode(_nodenum, _element[_nowtri].node[0], _element[_nowtri].node[1]);
+	tmpelement[1].setneighbor(_element[_nowtri].neighbor[2], _nowtri, _element.size());
 
-			for (int k = 0; k < 2; k++) {
-				int neighbor = _element[nowtri].neighbor[1 + k];
-				if (neighbor >= 0) {
-					_element[neighbor].neighbor[_element[neighbor].oppositenode(nowtri)] = _element.size() + k;
-				}
-			}
-
-			_element[nowtri].setnode(_nodenum, _element[nowtri].node[1], _element[nowtri].node[2]);
-			_element[nowtri].setneighbor(_element[nowtri].neighbor[0], _element.size(), _element.size() + 1);
-
-			_element[nowtri].getangle(_node);
-			tmpelement[0].getangle(_node);
-			tmpelement[1].getangle(_node);
-
-			stack.push_back(nowtri);
-			stack.push_back(_element.size());
-			stack.push_back(_element.size() + 1);
-
-			_element.push_back(tmpelement[0]);
-			_element.push_back(tmpelement[1]);
-			break;
-		}
-		//辺上にある時
-		else {
-			cout << "on->" << nowtri << "\n";
-			int nownode = pos - 1;
-			int neitri = _element[nowtri].neighbor[nownode];
-			//辺を挟んで隣接要素が存在するとき
-			if (neitri != -1 && _element[neitri].active == true) {
-				int neinode = _element[neitri].oppositenode(nowtri);
-				vector<ElementClass> tmptri(4);
-				tmptri[0].copy(_element[nowtri]);
-				tmptri[1].copy(_element[neitri]);
-
-				_element[nowtri].setnode(_nodenum, tmptri[0].node[nownode], tmptri[0].node[(nownode + 1) % 3]);
-				_element[nowtri].setneighbor(tmptri[0].neighbor[(nownode + 2) % 3], neitri, _element.size());
-				_element[nowtri].setside(tmptri[0].side[(nownode + 2) % 3], false, false);
-
-				_element[neitri].setnode(_nodenum, tmptri[0].node[(nownode + 1) % 3], tmptri[1].node[neinode]);
-				_element[neitri].setneighbor(tmptri[1].neighbor[(neinode + 1) % 3], _element.size() + 1, nowtri);
-				_element[neitri].setside(tmptri[1].side[(neinode + 1) % 3], false, false);
-
-				tmptri[2].setnode(_nodenum, tmptri[0].node[(nownode + 2) % 3], tmptri[0].node[nownode]);
-				tmptri[2].setneighbor(tmptri[0].neighbor[(nownode + 1) % 3], nowtri, _element.size() + 1);
-				tmptri[2].side[0] = tmptri[0].side[(nownode + 1) % 3];
-
-				tmptri[3].setnode(_nodenum, tmptri[1].node[neinode], tmptri[0].node[(nownode + 2) % 3]);
-				tmptri[3].setneighbor(tmptri[1].neighbor[(neinode + 2) % 3], _element.size(), neitri);
-				tmptri[3].side[0] = tmptri[1].side[(neinode + 2) % 3];
-
-				int nei1 = tmptri[0].neighbor[(nownode + 1) % 3];
-				if (nei1 != -1) {
-					_element[nei1].neighbor[_element[nei1].oppositenode(nowtri)] = _element.size();
-				}
-
-				int nei2 = tmptri[1].neighbor[(neinode + 2) % 3];
-				if (nei2 != -1) {
-					_element[nei2].neighbor[_element[nei2].oppositenode(neitri)] = _element.size() + 1;
-				}
-
-				if (_element[nowtri].node[1] == _nodenumm1 || _element[nowtri].node[1] == _nodenump1) {
-					tmptri[2].side[1] = true;
-					_element[nowtri].side[2] = true;
-				}
-				if (_element[neitri].node[1] == _nodenumm1 || _element[neitri].node[1] == _nodenump1) {
-					_element[nowtri].side[1] = true;
-					_element[neitri].side[2] = true;
-				}
-				if (tmptri[2].node[1] == _nodenumm1 || tmptri[2].node[1] == _nodenump1) {
-					tmptri[2].side[2] = true;
-					tmptri[3].side[1] = true;
-				}
-				if (tmptri[3].node[1] == _nodenumm1	|| tmptri[2].node[1] == _nodenump1) {
-					tmptri[3].side[2] = true;
-					_element[neitri].side[1] = true;
-				}
-
-				if (tmptri[0].side[nownode] == true) {
-					_element[nowtri].side[1] = true;
-					_element[neitri].side[2] = true;
-					tmptri[2].side[2] = true;
-					tmptri[3].side[1] = true;
-				}
-
-				_element[nowtri].getangle(_node);
-				_element[neitri].getangle(_node);
-				tmptri[2].getangle(_node);
-				tmptri[3].getangle(_node);
-
-				_element.push_back(tmptri[2]);
-				_element.push_back(tmptri[3]);
-			}
-			//辺を挟んで隣接要素が存在しないとき
-			else {
-				vector<ElementClass> tmptri(2);
-				tmptri[0].copy(_element[nowtri]);
-
-				_element[nowtri].setnode(_nodenum, tmptri[0].node[nownode], tmptri[0].node[(nownode + 1) % 3]);
-				_element[nowtri].setneighbor(tmptri[0].neighbor[(nownode + 2) % 3], -1, _element.size());
-				_element[nowtri].setside(tmptri[0].side[(nownode + 2) % 3], false, false);
-
-				tmptri[1].setnode(_nodenum, tmptri[0].node[(nownode + 2) % 3], tmptri[0].node[nownode]);
-				tmptri[1].setneighbor(tmptri[0].neighbor[(nownode + 1) % 3], nowtri, -1);
-				tmptri[1].setside(tmptri[0].side[(nownode + 1) % 3], false, false);
-
-				int nei1 = tmptri[0].neighbor[(nownode + 1) % 3];
-				if (nei1 != -1) {
-					_element[nei1].neighbor[_element[nei1].oppositenode(nowtri)] = _element.size();
-				}
-
-				if (_element[nowtri].node[1] == _nodenumm1 || _element[nowtri].node[1] == _nodenump1) {
-					tmptri[1].side[1] = true;
-					_element[nowtri].side[2] = true;
-				}
-				if (_element[nowtri].node[2] == _nodenumm1 || _element[nowtri].node[2] == _nodenump1) {
-					_element[nowtri].side[1] = true;
-				}
-				if (tmptri[1].node[1] == _nodenumm1	|| tmptri[1].node[1] == _nodenump1) {
-					tmptri[1].side[2] = true;
-				}
-
-				if (tmptri[0].side[nownode] == true) {
-					_element[nowtri].side[1] = true;
-					tmptri[1].side[2] = true;
-				}
-
-				_element[nowtri].getangle(_node);
-				tmptri[1].getangle(_node);
-
-				_element.push_back(tmptri[1]);
-			}
-			break;
+	for (int k = 0; k < 2; k++) {
+		int neighbor = _element[_nowtri].neighbor[1 + k];
+		if (neighbor >= 0) {
+			_element[neighbor].neighbor[_element[neighbor].oppositenode(_nowtri)] = _element.size() + k;
 		}
 	}
+
+	_element[_nowtri].setnode(_nodenum, _element[_nowtri].node[1], _element[_nowtri].node[2]);
+	_element[_nowtri].setneighbor(_element[_nowtri].neighbor[0], _element.size(), _element.size() + 1);
+
+	_element[_nowtri].getangle(_node);
+	tmpelement[0].getangle(_node);
+	tmpelement[1].getangle(_node);
+
+	stack.push_back(_nowtri);
+	stack.push_back(_element.size());
+	stack.push_back(_element.size() + 1);
+
+	_element.push_back(tmpelement[0]);
+	_element.push_back(tmpelement[1]);
 
 	//.....スワッピング.....
-	while (stack.size() > 0) {
+	swapping(_node, _element, stack, _nodenump1, _nodenumm1);
+}
+
+
+//*****************************************************************************
+//辺上に点がきたとき
+//*****************************************************************************
+void DelaunayClass::getelementon(vector<NodeClass> &_node, vector<ElementClass> &_element, int _nowtri, int _pos, int _nodenump1, int _nodenum, int _nodenumm1) {
+	vector<int> stack;
+	int nownode = _pos - 1;
+	int neitri = _element[_nowtri].neighbor[nownode];
+	//辺を挟んで隣接要素が存在するとき
+	if (neitri != -1 && _element[neitri].active == true) {
+		int neinode = _element[neitri].oppositenode(_nowtri);
+		vector<ElementClass> tmptri(4);
+		tmptri[0].copy(_element[_nowtri]);
+		tmptri[1].copy(_element[neitri]);
+
+		_element[_nowtri].setnode(_nodenum, tmptri[0].node[nownode], tmptri[0].node[(nownode + 1) % 3]);
+		_element[_nowtri].setneighbor(tmptri[0].neighbor[(nownode + 2) % 3], neitri, _element.size());
+		_element[_nowtri].setside(tmptri[0].side[(nownode + 2) % 3], false, false);
+
+		_element[neitri].setnode(_nodenum, tmptri[0].node[(nownode + 1) % 3], tmptri[1].node[neinode]);
+		_element[neitri].setneighbor(tmptri[1].neighbor[(neinode + 1) % 3], _element.size() + 1, _nowtri);
+		_element[neitri].setside(tmptri[1].side[(neinode + 1) % 3], false, false);
+
+		tmptri[2].setnode(_nodenum, tmptri[0].node[(nownode + 2) % 3], tmptri[0].node[nownode]);
+		tmptri[2].setneighbor(tmptri[0].neighbor[(nownode + 1) % 3], _nowtri, _element.size() + 1);
+		tmptri[2].side[0] = tmptri[0].side[(nownode + 1) % 3];
+
+		tmptri[3].setnode(_nodenum, tmptri[1].node[neinode], tmptri[0].node[(nownode + 2) % 3]);
+		tmptri[3].setneighbor(tmptri[1].neighbor[(neinode + 2) % 3], _element.size(), neitri);
+		tmptri[3].side[0] = tmptri[1].side[(neinode + 2) % 3];
+
+		int nei1 = tmptri[0].neighbor[(nownode + 1) % 3];
+		if (nei1 != -1) {
+			_element[nei1].neighbor[_element[nei1].oppositenode(_nowtri)] = _element.size();
+		}
+
+		int nei2 = tmptri[1].neighbor[(neinode + 2) % 3];
+		if (nei2 != -1) {
+			_element[nei2].neighbor[_element[nei2].oppositenode(neitri)] = _element.size() + 1;
+		}
+
+		if (_element[_nowtri].node[1] == _nodenumm1 || _element[_nowtri].node[1] == _nodenump1) {
+			tmptri[2].side[1] = true;
+			_element[_nowtri].side[2] = true;
+		}
+		if (_element[neitri].node[1] == _nodenumm1 || _element[neitri].node[1] == _nodenump1) {
+			_element[_nowtri].side[1] = true;
+			_element[neitri].side[2] = true;
+		}
+		if (tmptri[2].node[1] == _nodenumm1 || tmptri[2].node[1] == _nodenump1) {
+			tmptri[2].side[2] = true;
+			tmptri[3].side[1] = true;
+		}
+		if (tmptri[3].node[1] == _nodenumm1 || tmptri[2].node[1] == _nodenump1) {
+			tmptri[3].side[2] = true;
+			_element[neitri].side[1] = true;
+		}
+
+		if (tmptri[0].side[nownode] == true) {
+			_element[_nowtri].side[1] = true;
+			_element[neitri].side[2] = true;
+			tmptri[2].side[2] = true;
+			tmptri[3].side[1] = true;
+		}
+
+		_element[_nowtri].getangle(_node);
+		_element[neitri].getangle(_node);
+		tmptri[2].getangle(_node);
+		tmptri[3].getangle(_node);
+
+		stack.push_back(_nowtri);
+		stack.push_back(neitri);
+		stack.push_back(_element.size());
+		stack.push_back(_element.size() + 1);
+
+		_element.push_back(tmptri[2]);
+		_element.push_back(tmptri[3]);
+	}
+	//辺を挟んで隣接要素が存在しないとき
+	else {
+		vector<ElementClass> tmptri(2);
+		tmptri[0].copy(_element[_nowtri]);
+
+		_element[_nowtri].setnode(_nodenum, tmptri[0].node[nownode], tmptri[0].node[(nownode + 1) % 3]);
+		_element[_nowtri].setneighbor(tmptri[0].neighbor[(nownode + 2) % 3], -1, _element.size());
+		_element[_nowtri].setside(tmptri[0].side[(nownode + 2) % 3], false, false);
+
+		tmptri[1].setnode(_nodenum, tmptri[0].node[(nownode + 2) % 3], tmptri[0].node[nownode]);
+		tmptri[1].setneighbor(tmptri[0].neighbor[(nownode + 1) % 3], _nowtri, -1);
+		tmptri[1].setside(tmptri[0].side[(nownode + 1) % 3], false, false);
+
+		int nei1 = tmptri[0].neighbor[(nownode + 1) % 3];
+		if (nei1 != -1) {
+			_element[nei1].neighbor[_element[nei1].oppositenode(_nowtri)] = _element.size();
+		}
+
+		if (_element[_nowtri].node[1] == _nodenumm1 || _element[_nowtri].node[1] == _nodenump1) {
+			tmptri[1].side[1] = true;
+			_element[_nowtri].side[2] = true;
+		}
+		if (_element[_nowtri].node[2] == _nodenumm1 || _element[_nowtri].node[2] == _nodenump1) {
+			_element[_nowtri].side[1] = true;
+		}
+		if (tmptri[1].node[1] == _nodenumm1 || tmptri[1].node[1] == _nodenump1) {
+			tmptri[1].side[2] = true;
+		}
+
+		if (tmptri[0].side[nownode] == true) {
+			_element[_nowtri].side[1] = true;
+			tmptri[1].side[2] = true;
+		}
+
+		_element[_nowtri].getangle(_node);
+		tmptri[1].getangle(_node);
+
+		stack.push_back(_nowtri);
+		stack.push_back(_element.size());
+
+		_element.push_back(tmptri[1]);
+	}
+	//.....スワッピング.....
+	swapping(_node, _element, stack, _nodenump1, _nodenumm1);
+}
+
+
+//*****************************************************************************
+//スワッピング
+//*****************************************************************************
+void DelaunayClass::swapping(vector<NodeClass> &_node, vector<ElementClass> &_element, vector<int> &_stack, int _nodenump1, int _nodenumm1) {
+	while (_stack.size() > 0) {
 		//スタック末尾の要素を取り出す
-		int nowstack = stack[stack.size() - 1];
-		stack.pop_back();
+		int nowstack = _stack[_stack.size() - 1];
+		_stack.pop_back();
 		//スタックから取り出した要素に隣接する要素を取得
 		int neighbortri = _element[nowstack].neighbor[0];
 		//隣接する三角形要素が存在するとき
@@ -294,11 +293,11 @@ void DelaunayClass::getelement(vector<NodeClass> &_node, vector<ElementClass> &_
 					_element[neighbortri].side[2] = true;
 				}
 
-				_element[nowtri].getangle(_node);
+				_element[nowstack].getangle(_node);
 				_element[neighbortri].getangle(_node);
-				
-				stack.push_back(nowstack);
-				stack.push_back(neighbortri);
+
+				_stack.push_back(nowstack);
+				_stack.push_back(neighbortri);
 			}
 		}
 	}
@@ -309,9 +308,53 @@ void DelaunayClass::getelement(vector<NodeClass> &_node, vector<ElementClass> &_
 //境界の生成
 //*****************************************************************************
 void DelaunayClass::getboundary(vector<NodeClass> &_node, vector<ElementClass> &_element, BoundaryClass _boundary) {
-	getelement(_node, _element, -2, _boundary.nodelist[0], -2);
-	for (int i = 1; i < _boundary.nodelist.size(); i++) {
-		getelement(_node, _element, _boundary.nodelist[(i + 1) % _boundary.nodelist.size()], _boundary.nodelist[i], _boundary.nodelist[i - 1]);
+	for (int i = 0; i < _boundary.nodelist.size(); i++) {
+		int nowtri = 0;
+		if (_element.size() > 0) {
+			nowtri = _element.size() - 1;
+		}
+
+		//.....包含三角形の探索.....
+		for (int j = 0; j < _element.size(); j++) {
+			int pos = _element[nowtri].inouton(_boundary.nodelist[i], _node);
+			//要素外にある時
+			if (pos < 0 || _element[nowtri].active == false) {
+				if (_element[nowtri].neighbor[abs(pos) - 1] >= 0) {
+					nowtri = _element[nowtri].neighbor[abs(pos) - 1];
+				}
+				else {
+					cout << "Out of triangle Error!\n";
+				}
+			}
+			//要素内にある時
+			else if (pos == 0) {
+				cout << "in->" << nowtri << "\n";
+				if (i == 0) {
+					getelementin(_node, _element, nowtri, _boundary.nodelist[i + 1], _boundary.nodelist[i], -2);
+				}
+				else if(i == _boundary.nodelist.size() - 1){
+					getelementin(_node, _element, nowtri, _boundary.nodelist[0], _boundary.nodelist[i], _boundary.nodelist[i - 1]);
+				}
+				else {
+					getelementin(_node, _element, nowtri, _boundary.nodelist[i + 1], _boundary.nodelist[i], _boundary.nodelist[i - 1]);
+				}
+				break;
+			}
+			//辺上にある時
+			else {
+				cout << "on->" << nowtri << "\n";
+				if (i == 0) {
+					getelementon(_node, _element, nowtri, pos, _boundary.nodelist[i + 1], _boundary.nodelist[i], -2);
+				}
+				else if (i == _boundary.nodelist.size() - 1) {
+					getelementon(_node, _element, nowtri, pos, _boundary.nodelist[0], _boundary.nodelist[i], _boundary.nodelist[i - 1]);
+				}
+				else {
+					getelementon(_node, _element, nowtri, pos, _boundary.nodelist[i + 1], _boundary.nodelist[i], _boundary.nodelist[i - 1]);
+				}
+				break;
+			}
+		}
 	}
 }
 
@@ -376,7 +419,8 @@ void DelaunayClass::getinternalelement(vector<NodeClass> &_node, vector<ElementC
 		_node.push_back(addnode);
 
 		//追加した節点で要素分割
-		getelement(_node, _element, -2, _node.size() - 1, -2);
+		cout << "in-->" << maxelement << "\n";
+		getelementin(_node, _element, maxelement, -2, _node.size() - 1, -2);
 	}
 	//ひずみの大きい要素を分割
 	for (int i = 0; i < ADDITIONALNODENUM2; i++) {
@@ -401,7 +445,8 @@ void DelaunayClass::getinternalelement(vector<NodeClass> &_node, vector<ElementC
 		_node.push_back(addnode);
 
 		//追加した節点で要素分割
-		getelement(_node, _element, -2, _node.size() - 1, -2);
+		cout << "on-->" << maxelement << "\n";
+		getelementon(_node, _element, maxelement, maxnode + 1, -2, _node.size() - 1, -2);
 	}
 }
 
