@@ -13,8 +13,10 @@
 #include <math.h>
 #include <iostream>
 
-#define ADDITIONALNODENUM1	200				//細分割数
-#define ADDITIONALNODENUM2	50					//細分割数
+
+#define ADDITIONALNODENUM0	1000			//細分割数
+#define ADDITIONALNODENUM1	0				//細分割数
+#define ADDITIONALNODENUM2	0				//細分割数
 
 
 DelaunayClass::DelaunayClass(){}
@@ -403,6 +405,31 @@ void DelaunayClass::sortelement(vector<ElementClass> &_element) {
 //内部点の生成
 //*****************************************************************************
 void DelaunayClass::getinternalelement(vector<NodeClass> &_node, vector<ElementClass> &_element) {
+	//辺の長い要素を分割
+	for (int i = 0; i < ADDITIONALNODENUM0; i++) {
+		//追加する節点を生成
+		double maxside = _node[_element[0].node[0]].distance(_node[_element[0].node[1]]);
+		int maxelement = 0, maxnode = 0;
+		for (int j = 0; j < _element.size(); j++) {
+			for (int k = 0; k < 3; k++) {
+				if (maxside < _node[_element[j].node[(k + 1) % 3]].distance(_node[_element[j].node[(k + 2) % 3]]) && _element[j].active == true) {
+					maxside = _node[_element[j].node[(k + 1) % 3]].distance(_node[_element[j].node[(k + 2) % 3]]);
+					maxelement = j;
+					maxnode = k;
+				}
+			}
+		}
+
+		NodeClass addnode;
+		addnode.x = (_node[_element[maxelement].node[(maxnode + 1) % 3]].x + _node[_element[maxelement].node[(maxnode + 2) % 3]].x) / 2.0;
+		addnode.y = (_node[_element[maxelement].node[(maxnode + 1) % 3]].y + _node[_element[maxelement].node[(maxnode + 2) % 3]].y) / 2.0;
+		_node.push_back(addnode);
+
+		//追加した節点で要素分割
+		cout << "on-->" << maxelement << "\n";
+		getelementon(_node, _element, maxelement, maxnode + 1, -2, _node.size() - 1, -2);
+	}
+	
 	//面積の大きい要素を重心で分割
 	for (int i = 0; i < ADDITIONALNODENUM1; i++) {
 		double maxspace = _element[0].space(_node);
