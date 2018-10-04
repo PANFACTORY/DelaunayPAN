@@ -12,7 +12,7 @@
 
 
 #define SELFEPS0 DBL_EPSILON*1.0
-#define SELFEPS1 DBL_EPSILON*10000.0
+#define SELFEPS1 DBL_EPSILON*1.0
 
 
 ElementClass::ElementClass(){
@@ -69,6 +69,7 @@ void ElementClass::copy(ElementClass _originalelement) {
 		node[i] = _originalelement.node[i];
 		neighbor[i] = _originalelement.neighbor[i];
 		side[i] = _originalelement.side[i];
+		angle[i] = _originalelement.angle[i];
 	}
 }
 
