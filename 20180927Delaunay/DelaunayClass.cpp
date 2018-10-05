@@ -338,50 +338,54 @@ void DelaunayClass::deletesupertriangle(vector<NodeClass> &_node, vector<Element
 //*****************************************************************************
 void DelaunayClass::getboundary(vector<NodeClass> &_node, vector<ElementClass> &_element, BoundaryClass _boundary) {
 	for (int i = 0; i < _boundary.nodelist.size(); i++) {
-		int nowtri = 0;
-		if (_element.size() > 0) {
-			nowtri = _element.size() - 1;
-		}
+		//.....まだ設置されていないとき.....
+		if (_node[_boundary.nodelist[i]].set == false) {
+			_node[_boundary.nodelist[i]].set = true;
+			int nowtri = 0;
+			if (_element.size() > 0) {
+				nowtri = _element.size() - 1;
+			}
 
-		//.....包含三角形の探索.....
-		for (int j = 0; j < _element.size(); j++) {
-			int pos = _element[nowtri].inouton(_boundary.nodelist[i], _node);
-			//要素外にある時
-			if (pos < 0 || _element[nowtri].active == false) {
-				if (_element[nowtri].neighbor[abs(pos) - 1] >= 0) {
-					nowtri = _element[nowtri].neighbor[abs(pos) - 1];
+			//.....包含三角形の探索.....
+			for (int j = 0; j < _element.size(); j++) {
+				int pos = _element[nowtri].inouton(_boundary.nodelist[i], _node);
+				//要素外にある時
+				if (pos < 0 || _element[nowtri].active == false) {
+					if (_element[nowtri].neighbor[abs(pos) - 1] >= 0) {
+						nowtri = _element[nowtri].neighbor[abs(pos) - 1];
+					}
+					else {
+						cout << "Out of triangle Error!\n";
+					}
 				}
+				//要素内にある時
+				else if (pos == 0) {
+					cout << "\nin->" << nowtri << "\t";
+					if (i == 0) {
+						getelementin(_node, _element, nowtri, _boundary.nodelist[i + 1], _boundary.nodelist[i], -2);
+					}
+					else if (i == _boundary.nodelist.size() - 1) {
+						getelementin(_node, _element, nowtri, _boundary.nodelist[0], _boundary.nodelist[i], _boundary.nodelist[i - 1]);
+					}
+					else {
+						getelementin(_node, _element, nowtri, _boundary.nodelist[i + 1], _boundary.nodelist[i], _boundary.nodelist[i - 1]);
+					}
+					break;
+				}
+				//辺上にある時
 				else {
-					cout << "Out of triangle Error!\n";
+					cout << "\non->" << nowtri << "\t";
+					if (i == 0) {
+						getelementon(_node, _element, nowtri, pos - 1, _boundary.nodelist[i + 1], _boundary.nodelist[i], -2);
+					}
+					else if (i == _boundary.nodelist.size() - 1) {
+						getelementon(_node, _element, nowtri, pos - 1, _boundary.nodelist[0], _boundary.nodelist[i], _boundary.nodelist[i - 1]);
+					}
+					else {
+						getelementon(_node, _element, nowtri, pos - 1, _boundary.nodelist[i + 1], _boundary.nodelist[i], _boundary.nodelist[i - 1]);
+					}
+					break;
 				}
-			}
-			//要素内にある時
-			else if (pos == 0) {
-				cout << "\nin->" << nowtri << "\t";
-				if (i == 0) {
-					getelementin(_node, _element, nowtri, _boundary.nodelist[i + 1], _boundary.nodelist[i], -2);
-				}
-				else if (i == _boundary.nodelist.size() - 1) {
-					getelementin(_node, _element, nowtri, _boundary.nodelist[0], _boundary.nodelist[i], _boundary.nodelist[i - 1]);
-				}
-				else {
-					getelementin(_node, _element, nowtri, _boundary.nodelist[i + 1], _boundary.nodelist[i], _boundary.nodelist[i - 1]);
-				}
-				break;
-			}
-			//辺上にある時
-			else {
-				cout << "\non->" << nowtri << "\t";
-				if (i == 0) {
-					getelementon(_node, _element, nowtri, pos - 1, _boundary.nodelist[i + 1], _boundary.nodelist[i], -2);
-				}
-				else if (i == _boundary.nodelist.size() - 1) {
-					getelementon(_node, _element, nowtri, pos - 1, _boundary.nodelist[0], _boundary.nodelist[i], _boundary.nodelist[i - 1]);
-				}
-				else {
-					getelementon(_node, _element, nowtri, pos - 1, _boundary.nodelist[i + 1], _boundary.nodelist[i], _boundary.nodelist[i - 1]);
-				}
-				break;
 			}
 		}
 	}
