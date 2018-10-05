@@ -21,9 +21,11 @@ public:
 	DelaunayClass();
 	~DelaunayClass();
 
+	void delaunaymain(vector<NodeClass> &_node, vector<ElementClass> &_element, vector<BoundaryClass> &_boundary, double _maxsize);
+
 	void getsupertriangle(vector<NodeClass> &_node, vector<ElementClass> &_element);
 	void deletesupertriangle(vector<NodeClass> &_node, vector<ElementClass> &_element);
-	
+
 	void getboundary(vector<NodeClass> &_node, vector<ElementClass> &_element, BoundaryClass _boundary);
 	void deactivate(vector<NodeClass> &_node, vector<ElementClass> &_element, BoundaryClass _boundary);
 	void deleteelement(vector<ElementClass> &_element);

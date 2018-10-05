@@ -15,14 +15,39 @@
 
 
 #define ADDITIONALNODENUM0	6000			//•Ó‚Ì’·‚³‚É‚æ‚é×•ªŠ„”
-#define ADDITIONALNODENUM1	0				//–ÊÏ‚É‚æ‚é×•ªŠ„”
-#define ADDITIONALNODENUM2	0				//’¸Šp‚É‚æ‚é×•ªŠ„”
 
 
-DelaunayClass::DelaunayClass(){}
+DelaunayClass::DelaunayClass() {}
 
 
-DelaunayClass::~DelaunayClass(){}
+DelaunayClass::~DelaunayClass() {}
+
+
+//*****************************************************************************
+//DelaunayTriangulation‚Ìˆê˜A‚Ìˆ—
+//*****************************************************************************
+void DelaunayClass::delaunaymain(vector<NodeClass> &_node, vector<ElementClass> &_element, vector<BoundaryClass> &_boundary, double _maxsize) {
+	//----------SuperTriangle‚Ì¶¬----------
+	getsupertriangle(_node, _element);
+
+	//----------‹«ŠE‚Ì¶¬----------
+	for (int i = 0; i < _boundary.size(); i++) {
+		getboundary(_node, _element, _boundary[i]);
+		deactivate(_node, _element, _boundary[i]);
+	}
+
+	//----------•s—v‚È—v‘f‚Ìíœ----------
+	deletesupertriangle(_node, _element);
+	deleteelement(_element);
+
+	//----------—v‘f—v‘fŠÔ—×ÚŠÖŒW‚ğC•œ----------
+	sortelement(_element);
+
+	if (_maxsize > 0) {
+		//----------’Ç‰Á‚Åß“_‚ğ”z’u----------
+		getinternalelement(_node, _element, _maxsize);
+	}
+}
 
 
 //*****************************************************************************
@@ -278,7 +303,7 @@ void DelaunayClass::getsupertriangle(vector<NodeClass> &_node, vector<ElementCla
 		}
 	}
 	//rmax‚Ì1.5”{‚Ì’¼Œa‚ğ‚Â‰~‚ğ“àÚ‰~‚É‚ÂOŠpŒ`‚ğ¶¬
-	vector<NodeClass> st(3);						
+	vector<NodeClass> st(3);
 	ElementClass superelement;
 	for (int i = 0; i < 3; i++) {
 		st[i].x = -2.0*rmax * sin(2.0*M_PI*i / 3.0);
@@ -291,14 +316,15 @@ void DelaunayClass::getsupertriangle(vector<NodeClass> &_node, vector<ElementCla
 
 
 //*****************************************************************************
-//SuperTriangle‚Ìœ‹
+//SuperTriangle‚Ì–³Œø‰»
 //*****************************************************************************
 void DelaunayClass::deletesupertriangle(vector<NodeClass> &_node, vector<ElementClass> &_element) {
 	for (int i = _element.size() - 1; i >= 0; i--) {
 		for (int j = 0; j < 3; j++) {
 			for (int k = 0; k < 3; k++) {
 				if (_element[i].node[j] == _node.size() - 1 - k) {
-					_element.erase(_element.begin() + i);
+					_element[i].active = false;
+					//_element.erase(_element.begin() + i);
 					break;
 				}
 			}
@@ -335,7 +361,7 @@ void DelaunayClass::getboundary(vector<NodeClass> &_node, vector<ElementClass> &
 				if (i == 0) {
 					getelementin(_node, _element, nowtri, _boundary.nodelist[i + 1], _boundary.nodelist[i], -2);
 				}
-				else if(i == _boundary.nodelist.size() - 1){
+				else if (i == _boundary.nodelist.size() - 1) {
 					getelementin(_node, _element, nowtri, _boundary.nodelist[0], _boundary.nodelist[i], _boundary.nodelist[i - 1]);
 				}
 				else {
@@ -363,7 +389,7 @@ void DelaunayClass::getboundary(vector<NodeClass> &_node, vector<ElementClass> &
 
 
 //*****************************************************************************
-//‹«ŠEŠO•”‚Ì—v‘f‚ğ–³Œø‰»
+//—v‘f‚ğ–³Œø‰»
 //*****************************************************************************
 void DelaunayClass::deactivate(vector<NodeClass> &_node, vector<ElementClass> &_element, BoundaryClass _boundary) {
 	for (int i = _element.size() - 1; i >= 0; i--) {
@@ -371,7 +397,7 @@ void DelaunayClass::deactivate(vector<NodeClass> &_node, vector<ElementClass> &_
 		for (int j = 0; j < 3; j++) {
 			nodeorder[j] = _boundary.order(_element[i].node[j]);
 		}
-		
+
 		if (((nodeorder[0] < nodeorder[1] && nodeorder[1] < nodeorder[2])
 			|| (nodeorder[1] < nodeorder[2] && nodeorder[2] < nodeorder[0])
 			|| (nodeorder[2] < nodeorder[0] && nodeorder[0] < nodeorder[1]))
@@ -422,7 +448,7 @@ void DelaunayClass::getinternalelement(vector<NodeClass> &_node, vector<ElementC
 		}
 
 		if (maxside < _maxside) {
-			cout << "\ni="<< i << "\t" << "maxside=" << maxside << "\n";
+			cout << "\ni=" << i << "\t" << "maxside=" << maxside << "\n";
 			break;
 		}
 
