@@ -2,7 +2,7 @@
 //Title		:Delaunay ElementClass
 //Purpose	:Element for Delaunay Triangulation Method
 //Author	:Tanabe Yuta
-//Date		:2018/09/20
+//Date		:2018/09/20`
 //Copyright	:(C) 2018 Tanabe Yuta
 //*****************************************************************************
 #pragma once
@@ -20,7 +20,8 @@ public:
 	int neighbor[3];										//—×Ú—v‘f”Ô†
 	double angle[3];										//’¸Šp
 	bool side[3];											//true:•Ó‚ª‹«ŠE		false:•Ó‚ª”ñ‹«ŠE
-	bool active;											//‹«ŠEŠO—v‘f‚©”»’è
+	bool active;											//‹«ŠEŠO—v‘f‚©”»’è	trueF‹«ŠE“à	falseF‹«ŠEŠO
+	bool check;												//‹«ŠE“àŠO”»’èÏ‚İ‚©‹L‰¯‚·‚é	trueF”»’èÏ‚İ	falseF–¢”»’è
 
 	void setnode(int _node0, int _node1, int _node2);		//’¸“_‚Ìæ‚è‚İ
 	void setneighbor(int _neighbor0, int _neighbor1, int _neighbor2);		//—×Ú—v‘f”Ô†‚Ìæ‚è‚İ

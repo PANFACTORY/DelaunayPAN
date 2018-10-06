@@ -2,7 +2,7 @@
 //Title		:Delaunay ElementClass
 //Purpose	:Element for Delaunay Triangulation Method
 //Author	:Tanabe Yuta
-//Date		:2018/09/20
+//Date		:2018/09/20Å`
 //Copyright	:(C) 2018 Tanabe Yuta
 //*****************************************************************************
 #include "pch.h"
@@ -25,6 +25,7 @@ ElementClass::ElementClass(){
 	neighbor[2] = -1;
 
 	active = true;
+	check = false;
 }
 
 

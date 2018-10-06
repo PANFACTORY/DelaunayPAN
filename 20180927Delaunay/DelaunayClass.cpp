@@ -2,7 +2,7 @@
 //Title		:Delaunay SolverClass
 //Purpose	:Solver for Delaunay Triangulation Method
 //Author	:Tanabe Yuta
-//Date		:2018/09/27
+//Date		:2018/09/27Å`
 //Copyright	:(C) 2018 Tanabe Yuta
 //*****************************************************************************
 
@@ -33,6 +33,8 @@ void DelaunayClass::delaunaymain(vector<NodeClass> &_node, vector<ElementClass> 
 	//----------ã´äEÇÃê∂ê¨----------
 	for (int i = 0; i < _boundary.size(); i++) {
 		getboundary(_node, _element, _boundary[i]);
+	}
+	for (int i = 0; i < _boundary.size(); i++) {
 		deactivate(_node, _element, _boundary[i]);
 	}
 
@@ -402,11 +404,33 @@ void DelaunayClass::deactivate(vector<NodeClass> &_node, vector<ElementClass> &_
 			nodeorder[j] = _boundary.order(_element[i].node[j]);
 		}
 
-		if (((nodeorder[0] < nodeorder[1] && nodeorder[1] < nodeorder[2])
-			|| (nodeorder[1] < nodeorder[2] && nodeorder[2] < nodeorder[0])
-			|| (nodeorder[2] < nodeorder[0] && nodeorder[0] < nodeorder[1]))
-			&& (nodeorder[0] >= 0 && nodeorder[1] >= 0 && nodeorder[2] >= 0)) {
-			_element[i].active = false;
+		if (_boundary.type == true) {
+			if (_element[i].check == false) {
+				if (nodeorder[0] >= 0 && nodeorder[1] >= 0 && nodeorder[2] >= 0) {
+					_element[i].check = true;
+					if ((nodeorder[0] < nodeorder[1] && nodeorder[1] < nodeorder[2])
+						|| (nodeorder[1] < nodeorder[2] && nodeorder[2] < nodeorder[0])
+						|| (nodeorder[2] < nodeorder[0] && nodeorder[0] < nodeorder[1])) {
+						_element[i].active = false;
+					}
+				}
+			}
+		}
+		else {
+			if (_element[i].check == false) {
+				if ((nodeorder[0] < 0 && nodeorder[1] >= 0 && nodeorder[2] >= 0)
+					|| (nodeorder[0] >= 0 && nodeorder[1] < 0 && nodeorder[2] >= 0)
+					|| (nodeorder[0] >= 0 && nodeorder[1] >= 0 && nodeorder[2] < 0)
+					|| (nodeorder[0] < 0 && nodeorder[1] < 0 && nodeorder[2] >= 0)
+					|| (nodeorder[0] >= 0 && nodeorder[1] < 0 && nodeorder[2] < 0)
+					|| (nodeorder[0] < 0 && nodeorder[1] >= 0 && nodeorder[2] < 0)) {
+					_element[i].check = true;
+				}
+				else if (nodeorder[0] >= 0 && nodeorder[1] >= 0 && nodeorder[2] >= 0) {
+					_element[i].check = true;
+					_element[i].active = false;
+				}
+			}
 		}
 	}
 }
@@ -473,7 +497,7 @@ void DelaunayClass::getinternalelement(vector<NodeClass> &_node, vector<ElementC
 //*****************************************************************************
 void DelaunayClass::deleteelement(vector<ElementClass> &_element) {
 	for (int i = _element.size() - 1; i >= 0; i--) {
-		if (_element[i].active == false) {
+		if (_element[i].active == false || _element[i].check == false) {
 			_element.erase(_element.begin() + i);
 		}
 	}

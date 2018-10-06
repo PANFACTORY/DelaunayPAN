@@ -2,7 +2,7 @@
 //Title		:Delaunay SolverClass
 //Purpose	:Solver for Delaunay Triangulation Method
 //Author	:Tanabe Yuta
-//Date		:2018/09/27
+//Date		:2018/09/27Å`
 //Copyright	:(C) 2018 Tanabe Yuta
 //*****************************************************************************
 

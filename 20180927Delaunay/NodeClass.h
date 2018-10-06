@@ -2,7 +2,7 @@
 //Title		:Delaunay NodeClass
 //Purpose	:Node for Delaunay Triangulation Method
 //Author	:Tanabe Yuta
-//Date		:2018/09/20
+//Date		:2018/09/20Å`
 //Copyright	:(C) 2018 Tanabe Yuta
 //*****************************************************************************
 #pragma once
