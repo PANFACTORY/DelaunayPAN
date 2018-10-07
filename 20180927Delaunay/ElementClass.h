@@ -33,5 +33,6 @@ public:
 	int oppositenode(int _elementname);						//指定された要素との位置関係を返す
 
 	double space(vector<NodeClass> _node);					//要素面積を返す
+	int nodeorder(int _nodenum);							//指定された頂点が何番目か返す
 };
 

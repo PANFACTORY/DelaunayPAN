@@ -21,7 +21,7 @@ public:
 	DelaunayClass();
 	~DelaunayClass();
 
-	void delaunaymain(vector<NodeClass> &_node, vector<ElementClass> &_element, vector<BoundaryClass> &_boundary, double _maxsize);
+	void delaunaymain(vector<NodeClass> &_node, vector<ElementClass> &_element, vector<BoundaryClass> &_boundary, double _maxsize, int _laplaciannum);
 
 	void getsupertriangle(vector<NodeClass> &_node, vector<ElementClass> &_element);
 	void deletesupertriangle(vector<NodeClass> &_node, vector<ElementClass> &_element);
@@ -35,5 +35,7 @@ public:
 
 	void getelementin(vector<NodeClass> &_node, vector<ElementClass> &_element, int _nowtri, int _nodenump1, int _nodenum, int _nodenumm1);
 	void getelementon(vector<NodeClass> &_node, vector<ElementClass> &_element, int _nowtri, int _pos, int _nodenump1, int _nodenum, int _nodenumm1);
+
+	void laplacian(vector<NodeClass> &_node, vector<ElementClass> &_element, int _maxnum);
 };
 

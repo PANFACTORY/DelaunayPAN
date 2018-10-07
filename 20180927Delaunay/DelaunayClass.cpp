@@ -26,7 +26,7 @@ DelaunayClass::~DelaunayClass() {}
 //*****************************************************************************
 //DelaunayTriangulationの一連の処理
 //*****************************************************************************
-void DelaunayClass::delaunaymain(vector<NodeClass> &_node, vector<ElementClass> &_element, vector<BoundaryClass> &_boundary, double _maxsize) {
+void DelaunayClass::delaunaymain(vector<NodeClass> &_node, vector<ElementClass> &_element, vector<BoundaryClass> &_boundary, double _maxsize, int _laplaciannum) {
 	//----------SuperTriangleの生成----------
 	getsupertriangle(_node, _element);
 
@@ -48,6 +48,9 @@ void DelaunayClass::delaunaymain(vector<NodeClass> &_node, vector<ElementClass> 
 	if (_maxsize > 0) {
 		//----------追加で節点を配置----------
 		getinternalelement(_node, _element, _maxsize);
+
+		//----------Laplacian法による節点の修正----------
+		laplacian(_node, _element, _laplaciannum);
 	}
 }
 
@@ -170,6 +173,7 @@ void DelaunayClass::getelementon(vector<NodeClass> &_node, vector<ElementClass> 
 			tmptri[1].side[2] = true;
 			tmptri[2].side[2] = true;
 			tmptri[3].side[1] = true;
+			_node[_nodenum].type = true;
 		}
 
 		tmptri[0].getangle(_node);
@@ -218,6 +222,7 @@ void DelaunayClass::getelementon(vector<NodeClass> &_node, vector<ElementClass> 
 		if (_element[_nowtri].side[nownode] == true) {
 			tmptri[0].side[1] = true;
 			tmptri[1].side[2] = true;
+			_node[_nodenum].type = true;
 		}
 
 		tmptri[0].getangle(_node);
@@ -347,6 +352,7 @@ void DelaunayClass::getboundary(vector<NodeClass> &_node, vector<ElementClass> &
 			if (_element.size() > 0) {
 				nowtri = _element.size() - 1;
 			}
+			_node[_boundary.nodelist[i]].type = true;
 
 			//.....包含三角形の探索.....
 			for (int j = 0; j < _element.size(); j++) {
@@ -499,6 +505,68 @@ void DelaunayClass::deleteelement(vector<ElementClass> &_element) {
 	for (int i = _element.size() - 1; i >= 0; i--) {
 		if (_element[i].active == false || _element[i].check == false) {
 			_element.erase(_element.begin() + i);
+		}
+	}
+}
+
+
+//*****************************************************************************
+//Laplacian法
+//*****************************************************************************
+void DelaunayClass::laplacian(vector<NodeClass> &_node, vector<ElementClass> &_element, int _maxnum) {
+	vector<int> logstack;
+	int logstacknum = 10;			//同じ節点ばかりを修正しないように直近に修正したものをストック
+	for (int i = 0; i < _maxnum; i++) {
+		//頂角最大要素とその要素番号を探索
+		double angmax = 0.0;
+		int elemax = -1, nodemax = -1;
+		for (int j = 0; j < _element.size(); j++) {
+			for (int k = 0; k < 3; k++) {
+				if (angmax < abs(0.5 - abs(_element[j].angle[k])) && _node[_element[j].node[k]].type == false) {
+					angmax = abs(0.5 - abs(_element[j].angle[k]));
+					elemax = j;
+					nodemax = _element[j].node[k];
+				}
+			}
+		}
+		if (elemax < 0) {
+			break;
+		}
+		
+		_node[nodemax].type = true;
+		logstack.push_back(nodemax);
+		if (logstack.size() > logstacknum) {
+			_node[logstack[0]].type = false;
+			logstack.erase(logstack.begin());
+		}
+
+		//頂角最大要素と隣接する要素をスタックに入れる
+		vector<int> stack;
+		int nowtri = elemax;
+		do{
+			stack.push_back(nowtri);
+			nowtri = _element[nowtri].neighbor[(_element[nowtri].nodeorder(nodemax) + 1) % 3];
+		}while (nowtri != elemax);
+
+		//新しい座標を求める
+		double xdash = 0.0, ydash = 0.0;
+		for (int j = 0; j < stack.size(); j++) {
+			xdash += _node[_element[stack[j]].node[(_element[stack[j]].nodeorder(nodemax) + 1) % 3]].x 
+				+ _node[_element[stack[j]].node[(_element[stack[j]].nodeorder(nodemax) + 1) % 3]].x;
+			ydash += _node[_element[stack[j]].node[(_element[stack[j]].nodeorder(nodemax) + 1) % 3]].y
+				+ _node[_element[stack[j]].node[(_element[stack[j]].nodeorder(nodemax) + 1) % 3]].y;
+		}
+		xdash /= 2.0*(double)stack.size();
+		ydash /= 2.0*(double)stack.size();
+
+		_node[nodemax].x = xdash;
+		_node[nodemax].y = ydash;
+
+		cout << "\nLaplacian->" << nodemax << "\t" << xdash << "\t" << ydash;
+
+		//頂角の再計算
+		for (int j = 0; j < stack.size(); j++) {
+			_element[stack[j]].getangle(_node);
 		}
 	}
 }

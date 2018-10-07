@@ -16,6 +16,7 @@ public:
 
 	double x, y;										//節点座標点
 	bool set;											//true：設置済み	false：未設置
+	bool type;											//true：境界上の点	false：境界上の点でない
 
 	double distance(NodeClass _node);					//引数のノードとの距離を返す
 	double vecpro(NodeClass _node0, NodeClass _node1);	//自身から_node0へのベクトルと_node1へのベクトルの外積
