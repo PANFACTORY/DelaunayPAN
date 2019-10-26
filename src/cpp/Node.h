@@ -9,19 +9,50 @@
 #pragma once
 #include <vector>
 
+
 namespace DelaunayPAN{
+	template<class T>
 	class Node
 	{
 public:
 		Node();
 		~Node();
 
-		double x, y;										//�ߓ_���W�_
-		bool set;											//true�F�ݒu�ς�	false�F���ݒu
-		bool type;											//true�F���E��̓_	false�F���E��̓_�łȂ�
+		T x, y;			//cordinate vallue of Node
+		bool set;		//is set						
+		bool type;		//is on boundary
 
-		double distance(Node _node);					//�����̃m�[�h�Ƃ̋�����Ԃ�
-		double vecpro(Node _node0, Node _node1);	//���g����_node0�ւ̃x�N�g����_node1�ւ̃x�N�g���̊O��
-		double innpro(Node _node0, Node _node1);	//���g����_node0�ւ̃x�N�g����_node1�ւ̃x�N�g���̓���
+		T distance(Node<T> _node);					//get distance between other node
+		T vecpro(Node<T> _node0, Node<T> _node1);	//get innerproduct
+		T innpro(Node<T> _node0, Node<T> _node1);	//get vectorproduct
 	};
+
+
+	template<class T>
+	Node<T>::Node(){
+		set = false;
+		type = false;
+	}
+
+
+	template<class T>
+	Node<T>::~Node(){}
+
+
+	template<class T>
+	T Node<T>::distance(Node<T> _node) {
+		return sqrt(pow(x - _node.x, 2.0) + pow(y - _node.y, 2.0));
+	}
+
+
+	template<class T>
+	T Node<T>::vecpro(Node<T> _node0, Node<T> _node1) {
+		return (_node0.x - x)*(_node1.y - y) - (_node0.y - y)*(_node1.x - x);
+	}
+
+
+	template<class T>
+	T Node<T>::innpro(Node<T> _node0, Node<T> _node1) {
+		return (_node0.x - x)*(_node1.x - x) + (_node1.y - y)*(_node0.y - y);
+	}
 }
