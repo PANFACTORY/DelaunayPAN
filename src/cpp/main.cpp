@@ -27,13 +27,14 @@
 #define _USE_MATH_DEFINES
 #include <math.h>
 #include <time.h>
-#include "ElementClass.h"
-#include "NodeClass.h"
-#include "BoundaryClass.h"
-#include "DelaunayClass.h"
+#include "Element.h"
+#include "Node.h"
+#include "Boundary.h"
+#include "Delaunay.h"
 
 
 using namespace std;
+using namespace DelaunayPAN;
 
 
 //*****************************************************************************
