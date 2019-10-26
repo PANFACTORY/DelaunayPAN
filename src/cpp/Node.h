@@ -19,21 +19,24 @@ namespace DelaunayPAN{
 public:
 		Node();
 		~Node();
+		Node(T _x, T _y);
 
 		T x, y;			//cordinate vallue of Node
 		bool set;		//is set						
 		bool type;		//is on boundary
 
-		T distance(Node<T> _node);					//get distance between other node
-		T vecpro(Node<T> _node0, Node<T> _node1);	//get innerproduct
-		T innpro(Node<T> _node0, Node<T> _node1);	//get vectorproduct
+		T distance(const Node<T>& _node);							//get distance between other node
+		T vecpro(const Node<T>& _node0, const Node<T>& _node1);		//get innerproduct
+		T innpro(const Node<T>& _node0, const Node<T>& _node1);		//get vectorproduct
 	};
 
 
 	template<class T>
 	Node<T>::Node(){
-		set = false;
-		type = false;
+		this->x = T();
+		this->y = T();
+		this->set = false;
+		this->type = false;
 	}
 
 
@@ -42,19 +45,28 @@ public:
 
 
 	template<class T>
-	T Node<T>::distance(Node<T> _node) {
-		return sqrt(pow(x - _node.x, 2.0) + pow(y - _node.y, 2.0));
+	Node<T>::Node(T _x, T _y){
+		this->x = _x;
+		this->y = _y;
+		this->set = false;
+		this->type = false;
 	}
 
 
 	template<class T>
-	T Node<T>::vecpro(Node<T> _node0, Node<T> _node1) {
-		return (_node0.x - x)*(_node1.y - y) - (_node0.y - y)*(_node1.x - x);
+	T Node<T>::distance(const Node<T>& _node) {
+		return sqrt(pow(this->x - _node.x, 2.0) + pow(this->y - _node.y, 2.0));
 	}
 
 
 	template<class T>
-	T Node<T>::innpro(Node<T> _node0, Node<T> _node1) {
-		return (_node0.x - x)*(_node1.x - x) + (_node1.y - y)*(_node0.y - y);
+	T Node<T>::vecpro(const Node<T>& _node0, const Node<T>& _node1) {
+		return (_node0.x - this->x)*(_node1.y - this->y) - (_node0.y - this->y)*(_node1.x - this->x);
+	}
+
+
+	template<class T>
+	T Node<T>::innpro(const Node<T>& _node0, const Node<T>& _node1) {
+		return (_node0.x - this->x)*(_node1.x - this->x) + (_node1.y - this->y)*(_node0.y - this->y);
 	}
 }

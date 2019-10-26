@@ -44,7 +44,7 @@ using namespace DelaunayPAN;
 //*****************************************************************************
 //DXFファイル出力
 //*****************************************************************************
-void exportdxf(vector<Element> _element, vector<Node> _node) {
+void exportdxf(vector<Element<double> > _element, vector<Node<double> > _node) {
 	double magx = 50.0, magy = 50.0, offsetx = 100.0, offsety = 100.0;
 	
     ofstream fout("Mesh.dxf");
@@ -68,7 +68,7 @@ void exportdxf(vector<Element> _element, vector<Node> _node) {
 //*****************************************************************************
 //要素の出力
 //*****************************************************************************
-void showelements(vector<Element> _element, vector<Node> _node) {
+void showelements(vector<Element<double> > _element, vector<Node<double> > _node) {
 	FILE *fp;
 	fp = _popen("gnuplot -persist", "w");							// パイプを開き、gnuplotの立ち上げ
 	fprintf(fp, "set title 'Triangle Elements'\n");					//グラフタイトル
@@ -115,7 +115,7 @@ void showelements(vector<Element> _element, vector<Node> _node) {
 //*****************************************************************************
 //節点の取り込み
 //*****************************************************************************
-void importnode(vector<Node> &_node, string _fname) {
+void importnode(vector<Node<double> > &_node, string _fname) {
 	string tmp;
 
 	ifstream fin(_fname);
@@ -126,12 +126,8 @@ void importnode(vector<Node> &_node, string _fname) {
 	while (getline(fin, tmp)) {
 		istringstream ssi(tmp);
 		string tmpx, tmpy;
-		Node tmpnode;
-
 		ssi >> tmpx >> tmpy;
-		tmpnode.x = stod(tmpx);
-		tmpnode.y = stod(tmpy);
-		_node.push_back(tmpnode);
+		_node.push_back(Node<double>(stod(tmpx), stod(tmpy)));
 	}
 	fin.close();
 }
@@ -152,6 +148,7 @@ void importboundary(vector<Boundary> &_boundary, string _fname, bool _type) {
 	while (getline(fin, tmp)) {
 		tmpboundary.nodelist.push_back(stoi(tmp));
 	}
+		
 	fin.close();
 	tmpboundary.type = _type;
 	_boundary.push_back(tmpboundary);
@@ -163,7 +160,7 @@ void importboundary(vector<Boundary> &_boundary, string _fname, bool _type) {
 //*****************************************************************************
 int main() {
 	//----------節点座標の取り込み----------
-	vector<Node> node;							//節点
+	vector<Node<double> > node;							//節点
 	importnode(node, "sample/Model1/nodes.dat");
 
 	//----------境界の取り込み----------
@@ -175,9 +172,9 @@ int main() {
 	importboundary(boundary, "sample/Model1/internalboundary1.dat", false);
 
 	//----------DelaunayTriangulationの実行----------
-	vector<Element> element;					//要素
+	vector<Element<double> > element;					//要素
 	clock_t ts = clock();
-	Delaunay mesher;							//Mesherオブジェクト
+	Delaunay<double> mesher;							//Mesherオブジェクト
 	mesher.delaunaymain(node, element, boundary, 0.05, 1000);
 	clock_t te = clock();
 	cout << "\ntime cost:\t" << (double)(te - ts) / CLOCKS_PER_SEC << "sec.\n";
