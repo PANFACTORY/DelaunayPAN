@@ -25,10 +25,10 @@ public:
 		~Element();
 		Element(int _node0, int _node1, int _node2);
 
-		std::array<int, 3> node;								//id of nodes
-		std::array<int, 3> neighbor;							//id of neighbor element
-		std::array<T, 3> angle;									//angle of each corner
-		std::array<bool, 3> side;								//is edge on boundary
+		std::array<int, 3> nodes;								//id of nodes
+		std::array<int, 3> neighbors;							//id of neighbor element
+		std::array<T, 3> angles;								//angle of each corner
+		std::array<bool, 3> sides;								//is edge on boundary
 		bool active;											//is in boundary
 		bool check;												//has already checked
 
@@ -52,17 +52,17 @@ public:
 
 	template<class T>
 	Element<T>::Element(){
-		this->node[0] = -1;
-		this->node[1] = -1;
-		this->node[2] = -1;
+		this->nodes[0] = -1;
+		this->nodes[1] = -1;
+		this->nodes[2] = -1;
 
-		this->side[0] = false;
-		this->side[1] = false;
-		this->side[2] = false;
+		this->sides[0] = false;
+		this->sides[1] = false;
+		this->sides[2] = false;
 
-		this->neighbor[0] = -1;
-		this->neighbor[1] = -1;
-		this->neighbor[2] = -1;
+		this->neighbors[0] = -1;
+		this->neighbors[1] = -1;
+		this->neighbors[2] = -1;
 
 		this->active = true;
 		this->check = false;
@@ -75,17 +75,17 @@ public:
 
 	template<class T>
 	Element<T>::Element(int _node0, int _node1, int _node2){
-		this->node[0] = _node0;
-		this->node[1] = _node1;
-		this->node[2] = _node2;
+		this->nodes[0] = _node0;
+		this->nodes[1] = _node1;
+		this->nodes[2] = _node2;
 
-		this->side[0] = false;				
-		this->side[1] = false;
-		this->side[2] = false;
+		this->sides[0] = false;				
+		this->sides[1] = false;
+		this->sides[2] = false;
 
-		this->neighbor[0] = -1;				
-		this->neighbor[1] = -1;
-		this->neighbor[2] = -1;
+		this->neighbors[0] = -1;				
+		this->neighbors[1] = -1;
+		this->neighbors[2] = -1;
 
 		this->active = true;
 		this->check = false;
@@ -94,34 +94,34 @@ public:
 
 	template<class T>
 	void Element<T>::setnode(int _node0, int _node1, int _node2) {
-		this->node[0] = _node0;
-		this->node[1] = _node1;
-		this->node[2] = _node2;
+		this->nodes[0] = _node0;
+		this->nodes[1] = _node1;
+		this->nodes[2] = _node2;
 	}
 
 
 	template<class T>
 	void Element<T>::setneighbor(int _neighbor0, int _neighbor1, int _neighbor2) {
-		this->neighbor[0] = _neighbor0;
-		this->neighbor[1] = _neighbor1;
-		this->neighbor[2] = _neighbor2;
+		this->neighbors[0] = _neighbor0;
+		this->neighbors[1] = _neighbor1;
+		this->neighbors[2] = _neighbor2;
 	}
 
 
 	template<class T>
 	void Element<T>::setside(bool _side0, bool _side1, bool _side2) {
-		this->side[0] = _side0;
-		this->side[1] = _side1;
-		this->side[2] = _side2;
+		this->sides[0] = _side0;
+		this->sides[1] = _side1;
+		this->sides[2] = _side2;
 	}
 
 
 	template<class T>
 	void Element<T>::copy(const Element<T>& _originalelement) {
-		this->node = _originalelement.node;
-		this->neighbor = _originalelement.neighbor;
-		this->side = _originalelement.side;
-		this->angle = _originalelement.angle;
+		this->nodes = _originalelement.nodes;
+		this->neighbors = _originalelement.neighbors;
+		this->sides = _originalelement.sides;
+		this->angles = _originalelement.angles;
 	}
 
 
@@ -132,13 +132,13 @@ public:
 	//*****************************************************************************
 	template<class T>
 	int Element<T>::inouton(int _nodenum, std::vector<Node<T> >& _nodes) {
-		T vecpro0 = _nodes[this->node[0]].vecpro(_nodes[this->node[1]], _nodes[_nodenum]);
-		T vecpro1 = _nodes[this->node[1]].vecpro(_nodes[this->node[2]], _nodes[_nodenum]);
-		T vecpro2 = _nodes[this->node[2]].vecpro(_nodes[this->node[0]], _nodes[_nodenum]);
+		T vecpro0 = _nodes[this->nodes[0]].vecpro(_nodes[this->nodes[1]], _nodes[_nodenum]);
+		T vecpro1 = _nodes[this->nodes[1]].vecpro(_nodes[this->nodes[2]], _nodes[_nodenum]);
+		T vecpro2 = _nodes[this->nodes[2]].vecpro(_nodes[this->nodes[0]], _nodes[_nodenum]);
 
-		T vecpro3 = _nodes[this->node[0]].vecpro(_nodes[this->node[2]], _nodes[_nodenum]);
-		T vecpro4 = _nodes[this->node[1]].vecpro(_nodes[this->node[0]], _nodes[_nodenum]);
-		T vecpro5 = _nodes[this->node[2]].vecpro(_nodes[this->node[1]], _nodes[_nodenum]);
+		T vecpro3 = _nodes[this->nodes[0]].vecpro(_nodes[this->nodes[2]], _nodes[_nodenum]);
+		T vecpro4 = _nodes[this->nodes[1]].vecpro(_nodes[this->nodes[0]], _nodes[_nodenum]);
+		T vecpro5 = _nodes[this->nodes[2]].vecpro(_nodes[this->nodes[1]], _nodes[_nodenum]);
 
 		if (vecpro2 > T() && (vecpro0 < T() || (fabs(vecpro0) <= SELFEPS0 && vecpro5 > T()))) {
 			return -3;
@@ -170,7 +170,7 @@ public:
 	template<class T>
 	int Element<T>::nodeorder(int _nodenum) {
 		for (int i = 0; i < 3; i++) {
-			if (this->node[i] == _nodenum) {
+			if (this->nodes[i] == _nodenum) {
 				return i;
 			}
 		}
@@ -181,7 +181,7 @@ public:
 	template<class T>
 	int Element<T>::oppositenode(int _elementname) {
 		for (int i = 0; i < 3; i++) {
-			if (this->neighbor[i] == _elementname) {
+			if (this->neighbors[i] == _elementname) {
 				return i;
 			}
 		}
@@ -192,13 +192,13 @@ public:
 	template<class T>
 	void Element<T>::getangle(std::vector<Node<T> >& _nodes) {
 		for (int i = 0; i < 3; i++) {
-			this->angle[i] = 180.0*acos(_nodes[this->node[i]].innpro(_nodes[this->node[(i + 1) % 3]], _nodes[this->node[(i + 2) % 3]]) / (_nodes[this->node[i]].distance(_nodes[this->node[(i + 1) % 3]]) * _nodes[this->node[i]].distance(_nodes[this->node[(i + 2) % 3]]))) / M_PI;
+			this->angles[i] = 180.0*acos(_nodes[this->nodes[i]].innpro(_nodes[this->nodes[(i + 1) % 3]], _nodes[this->nodes[(i + 2) % 3]]) / (_nodes[this->nodes[i]].distance(_nodes[this->nodes[(i + 1) % 3]]) * _nodes[this->nodes[i]].distance(_nodes[this->nodes[(i + 2) % 3]]))) / M_PI;
 		}
 	}
 
 
 	template<class T>
 	T Element<T>::space(std::vector<Node<T> >& _nodes) {
-		return 0.5*_nodes[this->node[0]].vecpro(_nodes[this->node[1]], _nodes[this->node[2]]);
+		return 0.5*_nodes[this->nodes[0]].vecpro(_nodes[this->nodes[1]], _nodes[this->nodes[2]]);
 	}
 }

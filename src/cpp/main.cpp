@@ -53,10 +53,10 @@ void exportdxf(vector<Element<double> > _element, vector<Node<double> > _node) {
     for (int i = 0; i < _element.size(); i++) {
 		for (int j = 0; j < 3; j++) {
 			int color = 1;
-			if (_element[i].side[(j + 2) % 3] == true) {
+			if (_element[i].sides[(j + 2) % 3] == true) {
 				color = 7;
 			}
-			fout << "0\nLINE\n8\n0\n62\n" << color << "\n10\n" << _node[_element[i].node[j]].x * magx + offsetx << "\n20\n" << _node[_element[i].node[j]].y * magy + offsety << "\n11\n" << _node[_element[i].node[(j + 1) % 3]].x * magx + offsetx << "\n21\n" << _node[_element[i].node[(j + 1) % 3]].y * magy + offsety << endl;
+			fout << "0\nLINE\n8\n0\n62\n" << color << "\n10\n" << _node[_element[i].nodes[j]].x * magx + offsetx << "\n20\n" << _node[_element[i].nodes[j]].y * magy + offsety << "\n11\n" << _node[_element[i].nodes[(j + 1) % 3]].x * magx + offsetx << "\n21\n" << _node[_element[i].nodes[(j + 1) % 3]].y * magy + offsety << endl;
 		}
 	}
     fout << "0\nENDSEC\n0\nEOF";
@@ -85,9 +85,9 @@ void showelements(vector<Element<double> > _element, vector<Node<double> > _node
 	fprintf(fp, "plot '-' w l lw 1 lt rgb 'black'\n");
 	for (int i = 0; i < _element.size(); i++) {
 		for (int j = 0; j < 3; j++) {
-			if (_element[i].side[(j + 2) % 3] == true) {
+			if (_element[i].sides[(j + 2) % 3] == true) {
 				fprintf(fp, "%lf %lf \n %lf %lf \n \n",
-					_node[_element[i].node[j]].x, _node[_element[i].node[j]].y, _node[_element[i].node[(j + 1) % 3]].x, _node[_element[i].node[(j + 1) % 3]].y);
+					_node[_element[i].nodes[j]].x, _node[_element[i].nodes[j]].y, _node[_element[i].nodes[(j + 1) % 3]].x, _node[_element[i].nodes[(j + 1) % 3]].y);
 
 			}
 		}
@@ -98,9 +98,9 @@ void showelements(vector<Element<double> > _element, vector<Node<double> > _node
 	fprintf(fp, "plot '-' w l lw 1 lt rgb 'red'\n");
 	for (int i = 0; i < _element.size(); i++) {
 		for (int j = 0; j < 3; j++) {
-			if (_element[i].side[(j + 2) % 3] == false) {
+			if (_element[i].sides[(j + 2) % 3] == false) {
 				fprintf(fp, "%lf %lf \n %lf %lf \n \n",
-					_node[_element[i].node[j]].x, _node[_element[i].node[j]].y, _node[_element[i].node[(j + 1) % 3]].x, _node[_element[i].node[(j + 1) % 3]].y);
+					_node[_element[i].nodes[j]].x, _node[_element[i].nodes[j]].y, _node[_element[i].nodes[(j + 1) % 3]].x, _node[_element[i].nodes[(j + 1) % 3]].y);
 
 			}
 		}
