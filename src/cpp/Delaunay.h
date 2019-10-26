@@ -95,7 +95,6 @@ public:
 		tmpelement[1].sides[0] = _elements[_nowtri].sides[1];
 		tmpelement[2].sides[0] = _elements[_nowtri].sides[2];
 
-		//���E�Ӕ���
 		if (_elements[_nowtri].nodes[0] == _nodenumm1 || _elements[_nowtri].nodes[0] == _nodenump1) {
 			tmpelement[1].sides[1] = true;
 			tmpelement[2].sides[2] = true;
@@ -137,7 +136,6 @@ public:
 		_elements.push_back(tmpelement[1]);
 		_elements.push_back(tmpelement[2]);
 
-		//.....�X���b�s���O.....
 		swapping(_nodes, _elements, stack, _nodenump1, _nodenumm1);
 	}
 
@@ -147,7 +145,7 @@ public:
 		std::vector<int> stack;
 		int nownode = _pos;
 		int neitri = _element[_nowtri].neighbors[nownode];
-		//�ӂ�����ŗאڗv�f�����݂���Ƃ�
+		
 		if (neitri != -1 && _element[neitri].active == true) {
 			int neinode = _element[neitri].oppositenode(_nowtri);
 			std::vector<Element<T> > tmptri(4);			//0:nowtri	1:neitri
@@ -218,7 +216,7 @@ public:
 			_element.push_back(tmptri[2]);
 			_element.push_back(tmptri[3]);
 		}
-		//�ӂ�����ŗאڗv�f�����݂��Ȃ��Ƃ�
+		
 		else {
 			std::vector<Element<T> > tmptri(2);
 
@@ -261,7 +259,7 @@ public:
 			_element[_nowtri].copy(tmptri[0]);
 			_element.push_back(tmptri[1]);
 		}
-		//.....�X���b�s���O.....
+		
 		swapping(_node, _element, stack, _nodenump1, _nodenumm1);
 	}
 
@@ -269,12 +267,11 @@ public:
 	template<class T>
 	void Delaunay<T>::swapping(std::vector<Node<T> > &_node, std::vector<Element<T> > &_element, std::vector<int> &_stack, int _nodenump1, int _nodenumm1) {
 		while (_stack.size() > 0) {
-			//�X�^�b�N�����̗v�f�����o��
 			int nowstack = _stack[_stack.size() - 1];
 			_stack.pop_back();
-			//�X�^�b�N������o�����v�f�ɗאڂ���v�f���擾
+			
 			int neighbortri = _element[nowstack].neighbors[0];
-			//�אڂ���O�p�`�v�f�����݂���Ƃ�
+			
 			if (neighbortri >= 0 && _element[neighbortri].active == true) {
 				int neighbornode = _element[neighbortri].oppositenode(nowstack);
 				T r0 = _node[_element[nowstack].nodes[1]].distance(_node[_element[nowstack].nodes[2]]);
@@ -284,8 +281,7 @@ public:
 					&& _element[neighbortri].inouton(_element[nowstack].nodes[0], _node) == -(neighbornode + 1)
 					&& _element[nowstack].sides[0] == false) {
 					
-					Element<T> tmpelement;
-					tmpelement.copy(_element[neighbortri]);
+					Element<T> tmpelement = Element<T>(_element[neighbortri]);
 
 					int neighbor1 = tmpelement.neighbors[(neighbornode + 1) % 3];
 					if (neighbor1 >= 0) {
@@ -305,7 +301,6 @@ public:
 					_element[nowstack].setnode(_element[nowstack].nodes[0], _element[nowstack].nodes[1], tmpelement.nodes[neighbornode]);
 					_element[nowstack].setneighbor(tmpelement.neighbors[(neighbornode + 1) % 3], neighbortri, _element[nowstack].neighbors[2]);
 
-					//���E�Ӕ���
 					if (_element[nowstack].nodes[2] == _nodenumm1 || _element[nowstack].nodes[2] == _nodenump1) {
 						_element[nowstack].sides[1] = true;
 						_element[neighbortri].sides[2] = true;
@@ -345,12 +340,10 @@ public:
 	template<class T>
 	void Delaunay<T>::deletesupertriangle(std::vector<Node<T> > &_node, std::vector<Element<T> > &_element) {
 		for (int i = _element.size() - 1; i >= 0; i--) {
-			for (int j = 0; j < 3; j++) {
-				for (int k = 0; k < 3; k++) {
-					if (_element[i].nodes[j] == _node.size() - 1 - k) {
-						_element[i].active = false;
-						break;
-					}
+			for (const auto& node : _element[i].nodes) {
+				if (node == _node.size() - 1 || node == _node.size() - 2 || node == _node.size() - 3) {
+					_element[i].active = false;
+					break;
 				}
 			}
 		}

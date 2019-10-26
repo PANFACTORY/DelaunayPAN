@@ -16,9 +16,6 @@ namespace DelaunayPAN{
 	Boundary::~Boundary(){}
 
 
-	//*****************************************************************************
-	//�ߓ_�̋��E�ɂ�����ԍ���Ԃ�
-	//*****************************************************************************
 	int Boundary::order(int _nodenum) {
 		for (int i = 0; i < nodelist.size(); i++) {
 			if (nodelist[i] == _nodenum) {
