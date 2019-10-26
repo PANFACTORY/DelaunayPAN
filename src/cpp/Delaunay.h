@@ -19,45 +19,11 @@
 
 
 namespace DelaunayPAN{
-	template<class T>
-	class Delaunay
-	{
-public:
-		Delaunay();
-		~Delaunay();
-
-		void delaunaymain(std::vector<Node<T> > &_nodes, std::vector<Element<T> > &_elements, std::vector<Boundary> &_boundaries, T _maxsize, int _laplaciannum);
-
-		void getsupertriangle(std::vector<Node<T> > &_nodes, std::vector<Element<T> > &_elements);
-		void deletesupertriangle(std::vector<Node<T> > &_node, std::vector<Element<T> > &_element);
-
-		void getboundary(std::vector<Node<T> > &_nodes, std::vector<Element<T> > &_elements, Boundary _boundary);
-		void deactivate(std::vector<Node<T> > &_nodes, std::vector<Element<T> > &_elements, Boundary _boundary);
-		void deleteelement(std::vector<Element<T> > &_elements);
-		void sortelement(std::vector<Element<T> > &_elements);
-		void getinternalelement(std::vector<Node<T> > &_nodes, std::vector<Element<T> > &_elements, T _maxside);
-		void swapping(std::vector<Node<T> > &_nodes, std::vector<Element<T> > &_elements, std::vector<int> &_stack, int _nodenump1, int _nodenumm1);
-
-		void getelementin(std::vector<Node<T> > &_nodes, std::vector<Element<T> > &_elements, int _nowtri, int _nodenump1, int _nodenum, int _nodenumm1);
-		void getelementon(std::vector<Node<T> > &_nodes, std::vector<Element<T> > &_elements, int _nowtri, int _pos, int _nodenump1, int _nodenum, int _nodenumm1);
-
-		void laplacian(std::vector<Node<T> > &_nodes, std::vector<Element<T> > &_elements, int _maxnum);
-	};
-
-
 	#define ADDITIONALNODENUM0	100000			//�ӂ̒����ɂ��ו�����
 
 
 	template<class T>
-	Delaunay<T>::Delaunay() {}
-
-
-	template<class T>
-	Delaunay<T>::~Delaunay() {}
-
-
-	template<class T>
-	void Delaunay<T>::delaunaymain(std::vector<Node<T> > &_nodes, std::vector<Element<T> > &_elements, std::vector<Boundary> &_boundaries, T _maxsize, int _laplaciannum) {
+	void delaunaymain(std::vector<Node<T> > &_nodes, std::vector<Element<T> > &_elements, std::vector<Boundary> &_boundaries, T _maxsize, int _laplaciannum) {
 		//----------Generate SuperTriangle----------
 		getsupertriangle(_nodes, _elements);
 
@@ -87,7 +53,7 @@ public:
 
 
 	template<class T>
-	void Delaunay<T>::getelementin(std::vector<Node<T> > &_nodes, std::vector<Element<T> > &_elements, int _nowtri, int _nodenump1, int _nodenum, int _nodenumm1) {
+	void getelementin(std::vector<Node<T> > &_nodes, std::vector<Element<T> > &_elements, int _nowtri, int _nodenump1, int _nodenum, int _nodenumm1) {
 		std::vector<int> stack;
 		std::vector<Element<T> > tmpelement(3);
 
@@ -141,7 +107,7 @@ public:
 
 
 	template<class T>
-	void Delaunay<T>::getelementon(std::vector<Node<T> > &_node, std::vector<Element<T> > &_element, int _nowtri, int _pos, int _nodenump1, int _nodenum, int _nodenumm1) {
+	void getelementon(std::vector<Node<T> > &_node, std::vector<Element<T> > &_element, int _nowtri, int _pos, int _nodenump1, int _nodenum, int _nodenumm1) {
 		std::vector<int> stack;
 		int nownode = _pos;
 		int neitri = _element[_nowtri].neighbors[nownode];
@@ -265,7 +231,7 @@ public:
 
 
 	template<class T>
-	void Delaunay<T>::swapping(std::vector<Node<T> > &_node, std::vector<Element<T> > &_element, std::vector<int> &_stack, int _nodenump1, int _nodenumm1) {
+	void swapping(std::vector<Node<T> > &_node, std::vector<Element<T> > &_element, std::vector<int> &_stack, int _nodenump1, int _nodenumm1) {
 		while (_stack.size() > 0) {
 			int nowstack = _stack[_stack.size() - 1];
 			_stack.pop_back();
@@ -318,7 +284,7 @@ public:
 
 
 	template<class T>
-	void Delaunay<T>::getsupertriangle(std::vector<Node<T> > &_nodes, std::vector<Element<T> > &_elements) {
+	void getsupertriangle(std::vector<Node<T> > &_nodes, std::vector<Element<T> > &_elements) {
 		//Get distance maximam
 		T rmax = T();
 		Node<T> o;
@@ -338,7 +304,7 @@ public:
 
 
 	template<class T>
-	void Delaunay<T>::deletesupertriangle(std::vector<Node<T> > &_node, std::vector<Element<T> > &_element) {
+	void deletesupertriangle(std::vector<Node<T> > &_node, std::vector<Element<T> > &_element) {
 		for (int i = _element.size() - 1; i >= 0; i--) {
 			for (const auto& node : _element[i].nodes) {
 				if (node == _node.size() - 1 || node == _node.size() - 2 || node == _node.size() - 3) {
@@ -351,7 +317,7 @@ public:
 
 
 	template<class T>
-	void Delaunay<T>::getboundary(std::vector<Node<T> > &_node, std::vector<Element<T> > &_element, Boundary _boundary) {
+	void getboundary(std::vector<Node<T> > &_node, std::vector<Element<T> > &_element, Boundary _boundary) {
 		for (int i = 0; i < _boundary.nodelists.size(); i++) {
 			//.....�܂��ݒu����Ă��Ȃ��Ƃ�.....
 			if (_node[_boundary.nodelists[i]].set == false) {
@@ -407,7 +373,7 @@ public:
 
 
 	template<class T>
-	void Delaunay<T>::deactivate(std::vector<Node<T> > &_node, std::vector<Element<T> > &_element, Boundary _boundary) {
+	void deactivate(std::vector<Node<T> > &_node, std::vector<Element<T> > &_element, Boundary _boundary) {
 		for (int i = _element.size() - 1; i >= 0; i--) {
 			int nodeorder[3];
 			for (int j = 0; j < 3; j++) {
@@ -447,7 +413,7 @@ public:
 
 
 	template<class T>
-	void Delaunay<T>::sortelement(std::vector<Element<T> > &_element) {
+	void sortelement(std::vector<Element<T> > &_element) {
 		for (int i = 0; i < _element.size(); i++) {
 			for (int j = 0; j < 3; j++) {
 				_element[i].neighbors[j] = -1;
@@ -465,7 +431,7 @@ public:
 
 
 	template<class T>
-	void Delaunay<T>::getinternalelement(std::vector<Node<T> > &_node, std::vector<Element<T> > &_element, T _maxside) {
+	void getinternalelement(std::vector<Node<T> > &_node, std::vector<Element<T> > &_element, T _maxside) {
 		//�ӂ̒����v�f�𕪊�
 		for (int i = 0; i < ADDITIONALNODENUM0; i++) {
 			//�ǉ�����ߓ_�𐶐�
@@ -496,7 +462,7 @@ public:
 
 
 	template<class T>
-	void Delaunay<T>::deleteelement(std::vector<Element<T> > &_element) {
+	void deleteelement(std::vector<Element<T> > &_element) {
 		for (int i = _element.size() - 1; i >= 0; i--) {
 			if (_element[i].active == false || _element[i].check == false) {
 				_element.erase(_element.begin() + i);
@@ -506,7 +472,7 @@ public:
 
 
 	template<class T>
-	void Delaunay<T>::laplacian(std::vector<Node<T> > &_node, std::vector<Element<T> > &_element, int _maxnum) {
+	void laplacian(std::vector<Node<T> > &_node, std::vector<Element<T> > &_element, int _maxnum) {
 		std::vector<int> logstack;
 		int logstacknum = 100;			
 		for (int i = 0; i < _maxnum; i++) {

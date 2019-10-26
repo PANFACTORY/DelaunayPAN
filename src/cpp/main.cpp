@@ -174,8 +174,7 @@ int main() {
 	//----------DelaunayTriangulationの実行----------
 	vector<Element<double> > element;					//要素
 	clock_t ts = clock();
-	Delaunay<double> mesher;							//Mesherオブジェクト
-	mesher.delaunaymain(node, element, boundary, 0.05, 1000);
+	delaunaymain(node, element, boundary, 0.05, 1000);
 	clock_t te = clock();
 	cout << "\ntime cost:\t" << (double)(te - ts) / CLOCKS_PER_SEC << "sec.\n";
 	//----------結果の表示----------
