@@ -10,19 +10,19 @@
 
 
 namespace DelaunayPAN{
-	NodeClass::NodeClass(){
+	Node::Node(){
 		set = false;			//���߂͓_�͐ݒu����Ă��Ȃ����̂Ƃ���
 		type = false;			//���߂͋��E��̓_�ł͂Ȃ��Ƃ���
 	}
 
 
-	NodeClass::~NodeClass(){}
+	Node::~Node(){}
 
 
 	//*****************************************************************************
 	//�����Ɏw�肳�ꂽ�ߓ_�Ƃ̋�����Ԃ�
 	//*****************************************************************************
-	double NodeClass::distance(NodeClass _node) {
+	double Node::distance(Node _node) {
 		return sqrt(pow(x - _node.x, 2.0) + pow(y - _node.y, 2.0));
 	}
 
@@ -30,7 +30,7 @@ namespace DelaunayPAN{
 	//*****************************************************************************
 	//���g����_node0�ւ̃x�N�g����_node1�ւ̃x�N�g���̊O��
 	//*****************************************************************************
-	double NodeClass::vecpro(NodeClass _node0, NodeClass _node1) {
+	double Node::vecpro(Node _node0, Node _node1) {
 		return (_node0.x - x)*(_node1.y - y) - (_node0.y - y)*(_node1.x - x);
 	}
 
@@ -38,7 +38,7 @@ namespace DelaunayPAN{
 	//*****************************************************************************
 	//���g����_node0�ւ̃x�N�g����_node1�ւ̃x�N�g���̊O��
 	//*****************************************************************************
-	double NodeClass::innpro(NodeClass _node0, NodeClass _node1) {
+	double Node::innpro(Node _node0, Node _node1) {
 		return (_node0.x - x)*(_node1.x - x) + (_node1.y - y)*(_node0.y - y);
 	}
 }

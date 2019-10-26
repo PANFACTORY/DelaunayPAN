@@ -11,11 +11,11 @@
 
 
 namespace DelaunayPAN{
-	class BoundaryClass
+	class Boundary
 	{
 public:
-		BoundaryClass();
-		~BoundaryClass();
+		Boundary();
+		~Boundary();
 
 		std::vector<int> nodelist;		//list of nodes on boundary
 		bool type;						//type of boundary 

@@ -17,16 +17,16 @@ namespace DelaunayPAN{
 	#define ADDITIONALNODENUM0	100000			//�ӂ̒����ɂ��ו�����
 
 
-	DelaunayClass::DelaunayClass() {}
+	Delaunay::Delaunay() {}
 
 
-	DelaunayClass::~DelaunayClass() {}
+	Delaunay::~Delaunay() {}
 
 
 	//*****************************************************************************
 	//DelaunayTriangulation�̈�A�̏���
 	//*****************************************************************************
-	void DelaunayClass::delaunaymain(std::vector<NodeClass> &_node, std::vector<ElementClass> &_element, std::vector<BoundaryClass> &_boundary, double _maxsize, int _laplaciannum) {
+	void Delaunay::delaunaymain(std::vector<Node> &_node, std::vector<Element> &_element, std::vector<Boundary> &_boundary, double _maxsize, int _laplaciannum) {
 		//----------SuperTriangle�̐���----------
 		getsupertriangle(_node, _element);
 
@@ -58,9 +58,9 @@ namespace DelaunayPAN{
 	//*****************************************************************************
 	//�v�f���ɓ_�������Ƃ�
 	//*****************************************************************************
-	void DelaunayClass::getelementin(std::vector<NodeClass> &_node, std::vector<ElementClass> &_element, int _nowtri, int _nodenump1, int _nodenum, int _nodenumm1) {
+	void Delaunay::getelementin(std::vector<Node> &_node, std::vector<Element> &_element, int _nowtri, int _nodenump1, int _nodenum, int _nodenumm1) {
 		std::vector<int> stack;
-		std::vector<ElementClass> tmpelement(3);
+		std::vector<Element> tmpelement(3);
 
 		tmpelement[0].side[0] = _element[_nowtri].side[0];
 		tmpelement[1].side[0] = _element[_nowtri].side[1];
@@ -116,14 +116,14 @@ namespace DelaunayPAN{
 	//*****************************************************************************
 	//�ӏ�ɓ_�������Ƃ�
 	//*****************************************************************************
-	void DelaunayClass::getelementon(std::vector<NodeClass> &_node, std::vector<ElementClass> &_element, int _nowtri, int _pos, int _nodenump1, int _nodenum, int _nodenumm1) {
+	void Delaunay::getelementon(std::vector<Node> &_node, std::vector<Element> &_element, int _nowtri, int _pos, int _nodenump1, int _nodenum, int _nodenumm1) {
 		std::vector<int> stack;
 		int nownode = _pos;
 		int neitri = _element[_nowtri].neighbor[nownode];
 		//�ӂ�����ŗאڗv�f�����݂���Ƃ�
 		if (neitri != -1 && _element[neitri].active == true) {
 			int neinode = _element[neitri].oppositenode(_nowtri);
-			std::vector<ElementClass> tmptri(4);			//0:nowtri	1:neitri
+			std::vector<Element> tmptri(4);			//0:nowtri	1:neitri
 
 			tmptri[0].setnode(_nodenum, _element[_nowtri].node[nownode], _element[_nowtri].node[(nownode + 1) % 3]);
 			tmptri[0].setneighbor(_element[_nowtri].neighbor[(nownode + 2) % 3], neitri, _element.size());
@@ -193,7 +193,7 @@ namespace DelaunayPAN{
 		}
 		//�ӂ�����ŗאڗv�f�����݂��Ȃ��Ƃ�
 		else {
-			std::vector<ElementClass> tmptri(2);
+			std::vector<Element> tmptri(2);
 
 			tmptri[0].setnode(_nodenum, _element[_nowtri].node[nownode], _element[_nowtri].node[(nownode + 1) % 3]);
 			tmptri[0].setneighbor(_element[_nowtri].neighbor[(nownode + 2) % 3], -1, _element.size());
@@ -242,7 +242,7 @@ namespace DelaunayPAN{
 	//*****************************************************************************
 	//�X���b�s���O
 	//*****************************************************************************
-	void DelaunayClass::swapping(std::vector<NodeClass> &_node, std::vector<ElementClass> &_element, std::vector<int> &_stack, int _nodenump1, int _nodenumm1) {
+	void Delaunay::swapping(std::vector<Node> &_node, std::vector<Element> &_element, std::vector<int> &_stack, int _nodenump1, int _nodenumm1) {
 		while (_stack.size() > 0) {
 			//�X�^�b�N�����̗v�f�����o��
 			int nowstack = _stack[_stack.size() - 1];
@@ -260,7 +260,7 @@ namespace DelaunayPAN{
 					&& _element[nowstack].side[0] == false) {
 					//cout << "!";
 
-					ElementClass tmpelement;
+					Element tmpelement;
 					tmpelement.copy(_element[neighbortri]);
 
 					int neighbor1 = tmpelement.neighbor[(neighbornode + 1) % 3];
@@ -301,7 +301,7 @@ namespace DelaunayPAN{
 	//*****************************************************************************
 	//SuperTriangle�̐���
 	//*****************************************************************************
-	void DelaunayClass::getsupertriangle(std::vector<NodeClass> &_node, std::vector<ElementClass> &_element) {
+	void Delaunay::getsupertriangle(std::vector<Node> &_node, std::vector<Element> &_element) {
 		//���_����ł����ꂽ�_��T��
 		double rmax = 0.0;
 		for (int i = 0; i < _node.size(); i++) {
@@ -310,8 +310,8 @@ namespace DelaunayPAN{
 			}
 		}
 		//rmax��1.5�{�̒��a�����~����ډ~�Ɏ��O�p�`�𐶐�
-		std::vector<NodeClass> st(3);
-		ElementClass superelement;
+		std::vector<Node> st(3);
+		Element superelement;
 		for (int i = 0; i < 3; i++) {
 			st[i].x = -2.0*rmax * sin(2.0*M_PI*i / 3.0);
 			st[i].y = 2.0*rmax * cos(2.0*M_PI*i / 3.0);
@@ -325,7 +325,7 @@ namespace DelaunayPAN{
 	//*****************************************************************************
 	//SuperTriangle�̖�����
 	//*****************************************************************************
-	void DelaunayClass::deletesupertriangle(std::vector<NodeClass> &_node, std::vector<ElementClass> &_element) {
+	void Delaunay::deletesupertriangle(std::vector<Node> &_node, std::vector<Element> &_element) {
 		for (int i = _element.size() - 1; i >= 0; i--) {
 			for (int j = 0; j < 3; j++) {
 				for (int k = 0; k < 3; k++) {
@@ -342,7 +342,7 @@ namespace DelaunayPAN{
 	//*****************************************************************************
 	//���E�̐���
 	//*****************************************************************************
-	void DelaunayClass::getboundary(std::vector<NodeClass> &_node, std::vector<ElementClass> &_element, BoundaryClass _boundary) {
+	void Delaunay::getboundary(std::vector<Node> &_node, std::vector<Element> &_element, Boundary _boundary) {
 		for (int i = 0; i < _boundary.nodelist.size(); i++) {
 			//.....�܂��ݒu����Ă��Ȃ��Ƃ�.....
 			if (_node[_boundary.nodelist[i]].set == false) {
@@ -402,7 +402,7 @@ namespace DelaunayPAN{
 	//*****************************************************************************
 	//�v�f�𖳌���
 	//*****************************************************************************
-	void DelaunayClass::deactivate(std::vector<NodeClass> &_node, std::vector<ElementClass> &_element, BoundaryClass _boundary) {
+	void Delaunay::deactivate(std::vector<Node> &_node, std::vector<Element> &_element, Boundary _boundary) {
 		for (int i = _element.size() - 1; i >= 0; i--) {
 			int nodeorder[3];
 			for (int j = 0; j < 3; j++) {
@@ -444,7 +444,7 @@ namespace DelaunayPAN{
 	//*****************************************************************************
 	//�v�f�v�f�ԗאڊ֌W�̏C��
 	//*****************************************************************************
-	void DelaunayClass::sortelement(std::vector<ElementClass> &_element) {
+	void Delaunay::sortelement(std::vector<Element> &_element) {
 		for (int i = 0; i < _element.size(); i++) {
 			for (int j = 0; j < 3; j++) {
 				_element[i].neighbor[j] = -1;
@@ -464,7 +464,7 @@ namespace DelaunayPAN{
 	//*****************************************************************************
 	//�����_�̐���
 	//*****************************************************************************
-	void DelaunayClass::getinternalelement(std::vector<NodeClass> &_node, std::vector<ElementClass> &_element, double _maxside) {
+	void Delaunay::getinternalelement(std::vector<Node> &_node, std::vector<Element> &_element, double _maxside) {
 		//�ӂ̒����v�f�𕪊�
 		for (int i = 0; i < ADDITIONALNODENUM0; i++) {
 			//�ǉ�����ߓ_�𐶐�
@@ -484,7 +484,7 @@ namespace DelaunayPAN{
 				break;
 			}
 
-			NodeClass addnode;
+			Node addnode;
 			addnode.x = (_node[_element[maxelement].node[(maxnode + 1) % 3]].x + _node[_element[maxelement].node[(maxnode + 2) % 3]].x) / 2.0;
 			addnode.y = (_node[_element[maxelement].node[(maxnode + 1) % 3]].y + _node[_element[maxelement].node[(maxnode + 2) % 3]].y) / 2.0;
 			_node.push_back(addnode);
@@ -497,7 +497,7 @@ namespace DelaunayPAN{
 	//*****************************************************************************
 	//���������ꂽ�v�f���폜
 	//*****************************************************************************
-	void DelaunayClass::deleteelement(std::vector<ElementClass> &_element) {
+	void Delaunay::deleteelement(std::vector<Element> &_element) {
 		for (int i = _element.size() - 1; i >= 0; i--) {
 			if (_element[i].active == false || _element[i].check == false) {
 				_element.erase(_element.begin() + i);
@@ -509,7 +509,7 @@ namespace DelaunayPAN{
 	//*****************************************************************************
 	//Laplacian�@
 	//*****************************************************************************
-	void DelaunayClass::laplacian(std::vector<NodeClass> &_node, std::vector<ElementClass> &_element, int _maxnum) {
+	void Delaunay::laplacian(std::vector<Node> &_node, std::vector<Element> &_element, int _maxnum) {
 		std::vector<int> logstack;
 		int logstacknum = 100;			//�����ߓ_�΂�����C�����Ȃ��悤�ɒ��߂ɏC���������̂��X�g�b�N
 		for (int i = 0; i < _maxnum; i++) {

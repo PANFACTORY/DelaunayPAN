@@ -10,16 +10,16 @@
 
 
 namespace DelaunayPAN{
-	BoundaryClass::BoundaryClass(){}
+	Boundary::Boundary(){}
 
 
-	BoundaryClass::~BoundaryClass(){}
+	Boundary::~Boundary(){}
 
 
 	//*****************************************************************************
 	//�ߓ_�̋��E�ɂ�����ԍ���Ԃ�
 	//*****************************************************************************
-	int BoundaryClass::order(int _nodenum) {
+	int Boundary::order(int _nodenum) {
 		for (int i = 0; i < nodelist.size(); i++) {
 			if (nodelist[i] == _nodenum) {
 				return i;

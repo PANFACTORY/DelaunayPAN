@@ -17,7 +17,7 @@ namespace DelaunayPAN{
 	#define SELFEPS1 DBL_EPSILON*1.0
 
 
-	ElementClass::ElementClass(){
+	Element::Element(){
 		side[0] = false;				//�n�ߓ_�͑S�ċ��E�ł͂Ȃ����̂Ƃ���
 		side[1] = false;
 		side[2] = false;
@@ -31,13 +31,13 @@ namespace DelaunayPAN{
 	}
 
 
-	ElementClass::~ElementClass(){}
+	Element::~Element(){}
 
 
 	//*****************************************************************************
 	//���_����荞��
 	//*****************************************************************************
-	void ElementClass::setnode(int _node0, int _node1, int _node2) {
+	void Element::setnode(int _node0, int _node1, int _node2) {
 		node[0] = _node0;
 		node[1] = _node1;
 		node[2] = _node2;
@@ -47,7 +47,7 @@ namespace DelaunayPAN{
 	//*****************************************************************************
 	//�אڗv�f�ԍ�����荞��
 	//*****************************************************************************
-	void ElementClass::setneighbor(int _neighbor0, int _neighbor1, int _neighbor2) {
+	void Element::setneighbor(int _neighbor0, int _neighbor1, int _neighbor2) {
 		neighbor[0] = _neighbor0;
 		neighbor[1] = _neighbor1;
 		neighbor[2] = _neighbor2;
@@ -57,7 +57,7 @@ namespace DelaunayPAN{
 	//*****************************************************************************
 	//���E�ӂ���荞��
 	//*****************************************************************************
-	void ElementClass::setside(bool _side0, bool _side1, bool _side2) {
+	void Element::setside(bool _side0, bool _side1, bool _side2) {
 		side[0] = _side0;
 		side[1] = _side1;
 		side[2] = _side2;
@@ -67,7 +67,7 @@ namespace DelaunayPAN{
 	//*****************************************************************************
 	//�����̃I�u�W�F�N�g���R�s�[����
 	//*****************************************************************************
-	void ElementClass::copy(ElementClass _originalelement) {
+	void Element::copy(Element _originalelement) {
 		for (int i = 0; i < 3; i++) {
 			node[i] = _originalelement.node[i];
 			neighbor[i] = _originalelement.neighbor[i];
@@ -83,7 +83,7 @@ namespace DelaunayPAN{
 	//	return i+1		�Fi�Ԗڂ̕ӏ�
 	//	return 0		�F�O�p�`����
 	//*****************************************************************************
-	int ElementClass::inouton(int _nodenum, std::vector<NodeClass> _node) {
+	int Element::inouton(int _nodenum, std::vector<Node> _node) {
 		double vecpro0 = _node[node[0]].vecpro(_node[node[1]], _node[_nodenum]);
 		double vecpro1 = _node[node[1]].vecpro(_node[node[2]], _node[_nodenum]);
 		double vecpro2 = _node[node[2]].vecpro(_node[node[0]], _node[_nodenum]);
@@ -123,7 +123,7 @@ namespace DelaunayPAN{
 	//*****************************************************************************
 	//�w�肳�ꂽ���_�����Ԗڂ��Ԃ�
 	//*****************************************************************************
-	int ElementClass::nodeorder(int _nodenum) {
+	int Element::nodeorder(int _nodenum) {
 		for (int i = 0; i < 3; i++) {
 			if (node[i] == _nodenum) {
 				return i;
@@ -136,7 +136,7 @@ namespace DelaunayPAN{
 	//*****************************************************************************
 	//�w�肳�ꂽ�v�f�Ƃ̈ʒu�֌W��Ԃ�
 	//*****************************************************************************
-	int ElementClass::oppositenode(int _elementname) {
+	int Element::oppositenode(int _elementname) {
 		for (int i = 0; i < 3; i++) {
 			if (neighbor[i] == _elementname) {
 				return i;
@@ -149,7 +149,7 @@ namespace DelaunayPAN{
 	//*****************************************************************************
 	//���p���v�Z
 	//*****************************************************************************
-	void ElementClass::getangle(std::vector<NodeClass> _node) {
+	void Element::getangle(std::vector<Node> _node) {
 		for (int i = 0; i < 3; i++) {
 			angle[i] = 180.0*acos(_node[node[i]].innpro(_node[node[(i + 1) % 3]], _node[node[(i + 2) % 3]]) / (_node[node[i]].distance(_node[node[(i + 1) % 3]]) * _node[node[i]].distance(_node[node[(i + 2) % 3]]))) / M_PI;
 		}
@@ -159,7 +159,7 @@ namespace DelaunayPAN{
 	//*****************************************************************************
 	//�v�f�̖ʐς�Ԃ�
 	//*****************************************************************************
-	double ElementClass::space(std::vector<NodeClass> _node) {
+	double Element::space(std::vector<Node> _node) {
 		return 0.5*_node[node[0]].vecpro(_node[node[1]], _node[node[2]]);
 	}
 }

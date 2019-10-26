@@ -16,27 +16,27 @@
 
 
 namespace DelaunayPAN{
-	class DelaunayClass
+	class Delaunay
 	{
 public:
-		DelaunayClass();
-		~DelaunayClass();
+		Delaunay();
+		~Delaunay();
 
-		void delaunaymain(std::vector<NodeClass> &_node, std::vector<ElementClass> &_element, std::vector<BoundaryClass> &_boundary, double _maxsize, int _laplaciannum);
+		void delaunaymain(std::vector<Node> &_node, std::vector<Element> &_element, std::vector<Boundary> &_boundary, double _maxsize, int _laplaciannum);
 
-		void getsupertriangle(std::vector<NodeClass> &_node, std::vector<ElementClass> &_element);
-		void deletesupertriangle(std::vector<NodeClass> &_node, std::vector<ElementClass> &_element);
+		void getsupertriangle(std::vector<Node> &_node, std::vector<Element> &_element);
+		void deletesupertriangle(std::vector<Node> &_node, std::vector<Element> &_element);
 
-		void getboundary(std::vector<NodeClass> &_node, std::vector<ElementClass> &_element, BoundaryClass _boundary);
-		void deactivate(std::vector<NodeClass> &_node, std::vector<ElementClass> &_element, BoundaryClass _boundary);
-		void deleteelement(std::vector<ElementClass> &_element);
-		void sortelement(std::vector<ElementClass> &_element);
-		void getinternalelement(std::vector<NodeClass> &_node, std::vector<ElementClass> &_element, double _maxside);
-		void swapping(std::vector<NodeClass> &_node, std::vector<ElementClass> &_element, std::vector<int> &_stack, int _nodenump1, int _nodenumm1);
+		void getboundary(std::vector<Node> &_node, std::vector<Element> &_element, Boundary _boundary);
+		void deactivate(std::vector<Node> &_node, std::vector<Element> &_element, Boundary _boundary);
+		void deleteelement(std::vector<Element> &_element);
+		void sortelement(std::vector<Element> &_element);
+		void getinternalelement(std::vector<Node> &_node, std::vector<Element> &_element, double _maxside);
+		void swapping(std::vector<Node> &_node, std::vector<Element> &_element, std::vector<int> &_stack, int _nodenump1, int _nodenumm1);
 
-		void getelementin(std::vector<NodeClass> &_node, std::vector<ElementClass> &_element, int _nowtri, int _nodenump1, int _nodenum, int _nodenumm1);
-		void getelementon(std::vector<NodeClass> &_node, std::vector<ElementClass> &_element, int _nowtri, int _pos, int _nodenump1, int _nodenum, int _nodenumm1);
+		void getelementin(std::vector<Node> &_node, std::vector<Element> &_element, int _nowtri, int _nodenump1, int _nodenum, int _nodenumm1);
+		void getelementon(std::vector<Node> &_node, std::vector<Element> &_element, int _nowtri, int _pos, int _nodenump1, int _nodenum, int _nodenumm1);
 
-		void laplacian(std::vector<NodeClass> &_node, std::vector<ElementClass> &_element, int _maxnum);
+		void laplacian(std::vector<Node> &_node, std::vector<Element> &_element, int _maxnum);
 	};
 }

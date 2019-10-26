@@ -12,10 +12,10 @@
 
 
 namespace DelaunayPAN{
-	class ElementClass{
+	class Element{
 public:
-		ElementClass();
-		~ElementClass();
+		Element();
+		~Element();
 
 		int node[3];											//���_�̐ߓ_�ԍ�
 		int neighbor[3];										//�אڗv�f�ԍ�
@@ -27,13 +27,13 @@ public:
 		void setnode(int _node0, int _node1, int _node2);		//���_�̎�荞��
 		void setneighbor(int _neighbor0, int _neighbor1, int _neighbor2);		//�אڗv�f�ԍ��̎�荞��
 		void setside(bool _side0, bool _side1, bool _side2);	//���E�ӂ���荞��
-		void copy(ElementClass _originalelement);				//�I�u�W�F�N�g���R�s�[����
-		void getangle(std::vector<NodeClass> _node);					//���p���v�Z
+		void copy(Element _originalelement);				//�I�u�W�F�N�g���R�s�[����
+		void getangle(std::vector<Node> _node);					//���p���v�Z
 
-		int inouton(int _nodenum, std::vector<NodeClass> _node);		//�v�f�Ɠ_�̈ʒu�֌W��Ԃ�
+		int inouton(int _nodenum, std::vector<Node> _node);		//�v�f�Ɠ_�̈ʒu�֌W��Ԃ�
 		int oppositenode(int _elementname);						//�w�肳�ꂽ�v�f�Ƃ̈ʒu�֌W��Ԃ�
 
-		double space(std::vector<NodeClass> _node);					//�v�f�ʐς�Ԃ�
+		double space(std::vector<Node> _node);					//�v�f�ʐς�Ԃ�
 		int nodeorder(int _nodenum);							//�w�肳�ꂽ���_�����Ԗڂ��Ԃ�
 	};
 }

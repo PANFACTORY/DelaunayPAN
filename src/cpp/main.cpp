@@ -10,15 +10,17 @@
 //内部境界：反時計回りで定義，falseに設定
 //
 //手順としては
-//①節点（NodeClass）と境界（BoundaryClass）を定義
-//②要素配列を定義（ElementClass）
-//③Mesherオブジェクト（DelaunayClass）を生成し実行
-//	なおDelaunayClassのdelaunaymainの最後の引数は分割後の要素の辺長さ最大値
+//①節点（Node）と境界（Boundary）を定義
+//②要素配列を定義（Element）
+//③Mesherオブジェクト（Delaunay）を生成し実行
+//	なおDelaunayのdelaunaymainの最後の引数は分割後の要素の辺長さ最大値
 //*****************************************************************************
 //要修正：
 //要素の細かさ・密度分布制御->面積基準？八分木法
 //要素の歪み修正->Laplacian法
 //*****************************************************************************
+
+
 #include <iostream>
 #include <fstream>
 #include <sstream>
@@ -27,6 +29,8 @@
 #define _USE_MATH_DEFINES
 #include <math.h>
 #include <time.h>
+
+
 #include "Element.h"
 #include "Node.h"
 #include "Boundary.h"
@@ -40,10 +44,10 @@ using namespace DelaunayPAN;
 //*****************************************************************************
 //DXFファイル出力
 //*****************************************************************************
-void exportdxf(vector<ElementClass> _element, vector<NodeClass> _node) {
+void exportdxf(vector<Element> _element, vector<Node> _node) {
 	double magx = 50.0, magy = 50.0, offsetx = 100.0, offsety = 100.0;
 	
-    std::ofstream fout("Mesh.dxf");
+    ofstream fout("Mesh.dxf");
 
     fout << "0\nSECTION\n2\nHEADER\n9\n$ACADVER\n1\nAC1009\n0\nENDSEC\n0\nSECTION\n2\nTABLES\n0\nENDSEC\n0\nSECTION\n2\nBLOCKS\n0\nENDSEC\n0\nSECTION\n2\nENTITIES\n";
     for (int i = 0; i < _element.size(); i++) {
@@ -52,7 +56,7 @@ void exportdxf(vector<ElementClass> _element, vector<NodeClass> _node) {
 			if (_element[i].side[(j + 2) % 3] == true) {
 				color = 7;
 			}
-			fout << "0\nLINE\n8\n0\n62\n" << color << "\n10\n" << _node[_element[i].node[j]].x * magx + offsetx << "\n20\n" << _node[_element[i].node[j]].y * magy + offsety << "\n11\n" << _node[_element[i].node[(j + 1) % 3]].x * magx + offsetx << "\n21\n" << _node[_element[i].node[(j + 1) % 3]].y * magy + offsety << std::endl;
+			fout << "0\nLINE\n8\n0\n62\n" << color << "\n10\n" << _node[_element[i].node[j]].x * magx + offsetx << "\n20\n" << _node[_element[i].node[j]].y * magy + offsety << "\n11\n" << _node[_element[i].node[(j + 1) % 3]].x * magx + offsetx << "\n21\n" << _node[_element[i].node[(j + 1) % 3]].y * magy + offsety << endl;
 		}
 	}
     fout << "0\nENDSEC\n0\nEOF";
@@ -64,7 +68,7 @@ void exportdxf(vector<ElementClass> _element, vector<NodeClass> _node) {
 //*****************************************************************************
 //要素の出力
 //*****************************************************************************
-void showelements(vector<ElementClass> _element, vector<NodeClass> _node) {
+void showelements(vector<Element> _element, vector<Node> _node) {
 	FILE *fp;
 	fp = _popen("gnuplot -persist", "w");							// パイプを開き、gnuplotの立ち上げ
 	fprintf(fp, "set title 'Triangle Elements'\n");					//グラフタイトル
@@ -111,7 +115,7 @@ void showelements(vector<ElementClass> _element, vector<NodeClass> _node) {
 //*****************************************************************************
 //節点の取り込み
 //*****************************************************************************
-void importnode(vector<NodeClass> &_node, string _fname) {
+void importnode(vector<Node> &_node, string _fname) {
 	string tmp;
 
 	ifstream fin(_fname);
@@ -122,7 +126,7 @@ void importnode(vector<NodeClass> &_node, string _fname) {
 	while (getline(fin, tmp)) {
 		istringstream ssi(tmp);
 		string tmpx, tmpy;
-		NodeClass tmpnode;
+		Node tmpnode;
 
 		ssi >> tmpx >> tmpy;
 		tmpnode.x = stod(tmpx);
@@ -136,8 +140,8 @@ void importnode(vector<NodeClass> &_node, string _fname) {
 //*****************************************************************************
 //境界の取り込み
 //*****************************************************************************
-void importboundary(vector<BoundaryClass> &_boundary, string _fname, bool _type) {
-	BoundaryClass tmpboundary;
+void importboundary(vector<Boundary> &_boundary, string _fname, bool _type) {
+	Boundary tmpboundary;
 	string tmp;
 
 	ifstream fin(_fname);
@@ -159,11 +163,11 @@ void importboundary(vector<BoundaryClass> &_boundary, string _fname, bool _type)
 //*****************************************************************************
 int main() {
 	//----------節点座標の取り込み----------
-	vector<NodeClass> node;							//節点
+	vector<Node> node;							//節点
 	importnode(node, "sample/Model1/nodes.dat");
 
 	//----------境界の取り込み----------
-	vector<BoundaryClass> boundary;					//境界
+	vector<Boundary> boundary;					//境界
 	importboundary(boundary, "sample/Model1/externalboundary0.dat", true);
 	importboundary(boundary, "sample/Model1/externalboundary1.dat", true);
 	importboundary(boundary, "sample/Model1/externalboundary2.dat", true);
@@ -171,9 +175,9 @@ int main() {
 	importboundary(boundary, "sample/Model1/internalboundary1.dat", false);
 
 	//----------DelaunayTriangulationの実行----------
-	vector<ElementClass> element;					//要素
+	vector<Element> element;					//要素
 	clock_t ts = clock();
-	DelaunayClass mesher;							//Mesherオブジェクト
+	Delaunay mesher;							//Mesherオブジェクト
 	mesher.delaunaymain(node, element, boundary, 0.05, 1000);
 	clock_t te = clock();
 	cout << "\ntime cost:\t" << (double)(te - ts) / CLOCKS_PER_SEC << "sec.\n";
