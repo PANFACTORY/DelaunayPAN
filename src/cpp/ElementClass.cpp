@@ -2,13 +2,14 @@
 //Title		:Delaunay ElementClass
 //Purpose	:Element for Delaunay Triangulation Method
 //Author	:Tanabe Yuta
-//Date		:2018/09/20`
+//Date		:2018/09/20ï¿½`
 //Copyright	:(C) 2018 Tanabe Yuta
 //*****************************************************************************
-#include "pch.h"
+
 #include "ElementClass.h"
 #include <float.h>
-#include <cmath>
+#define _USE_MATH_DEFINES
+#include <math.h>
 
 
 #define SELFEPS0 DBL_EPSILON*1.0
@@ -16,11 +17,11 @@
 
 
 ElementClass::ElementClass(){
-	side[0] = false;				//n‚ß“_‚Í‘S‚Ä‹«ŠE‚Å‚Í‚È‚¢‚à‚Ì‚Æ‚·‚é
+	side[0] = false;				//ï¿½nï¿½ß“_ï¿½Í‘Sï¿½Ä‹ï¿½ï¿½Eï¿½Å‚Í‚È‚ï¿½ï¿½ï¿½ï¿½Ì‚Æ‚ï¿½ï¿½ï¿½
 	side[1] = false;
 	side[2] = false;
 
-	neighbor[0] = -1;				//—×Ú—v‘f”Ô†‚Ín‚ß‚Í–³‚µ
+	neighbor[0] = -1;				//ï¿½×Ú—vï¿½fï¿½Ôï¿½ï¿½Ínï¿½ß‚Í–ï¿½ï¿½ï¿½
 	neighbor[1] = -1;
 	neighbor[2] = -1;
 
@@ -33,7 +34,7 @@ ElementClass::~ElementClass(){}
 
 
 //*****************************************************************************
-//’¸“_‚ğæ‚è‚Ş
+//ï¿½ï¿½ï¿½_ï¿½ï¿½ï¿½ï¿½èï¿½ï¿½
 //*****************************************************************************
 void ElementClass::setnode(int _node0, int _node1, int _node2) {
 	node[0] = _node0;
@@ -43,7 +44,7 @@ void ElementClass::setnode(int _node0, int _node1, int _node2) {
 
 
 //*****************************************************************************
-//—×Ú—v‘f”Ô†‚ğæ‚è‚Ş
+//ï¿½×Ú—vï¿½fï¿½Ôï¿½ï¿½ï¿½ï¿½ï¿½èï¿½ï¿½
 //*****************************************************************************
 void ElementClass::setneighbor(int _neighbor0, int _neighbor1, int _neighbor2) {
 	neighbor[0] = _neighbor0;
@@ -53,7 +54,7 @@ void ElementClass::setneighbor(int _neighbor0, int _neighbor1, int _neighbor2) {
 
 
 //*****************************************************************************
-//‹«ŠE•Ó‚ğæ‚è‚Ş
+//ï¿½ï¿½ï¿½Eï¿½Ó‚ï¿½ï¿½ï¿½èï¿½ï¿½
 //*****************************************************************************
 void ElementClass::setside(bool _side0, bool _side1, bool _side2) {
 	side[0] = _side0;
@@ -63,7 +64,7 @@ void ElementClass::setside(bool _side0, bool _side1, bool _side2) {
 
 
 //*****************************************************************************
-//ˆø”‚ÌƒIƒuƒWƒFƒNƒg‚ğƒRƒs[‚·‚é
+//ï¿½ï¿½ï¿½ï¿½ï¿½ÌƒIï¿½uï¿½Wï¿½Fï¿½Nï¿½gï¿½ï¿½ï¿½Rï¿½sï¿½[ï¿½ï¿½ï¿½ï¿½
 //*****************************************************************************
 void ElementClass::copy(ElementClass _originalelement) {
 	for (int i = 0; i < 3; i++) {
@@ -76,10 +77,10 @@ void ElementClass::copy(ElementClass _originalelement) {
 
 
 //*****************************************************************************
-//OŠpŒ`‚Æß“_‚ÌˆÊ’uŠÖŒW‚ğ”»’è
-//	return -(i+1)	Fi”Ô–Ú‚Ì•Ó‚ÌŠO‘¤
-//	return i+1		Fi”Ô–Ú‚Ì•Óã
-//	return 0		FOŠpŒ`“à•”
+//ï¿½Oï¿½pï¿½`ï¿½Æß“_ï¿½ÌˆÊ’uï¿½ÖŒWï¿½ğ”»’ï¿½
+//	return -(i+1)	ï¿½Fiï¿½Ô–Ú‚Ì•Ó‚ÌŠOï¿½ï¿½
+//	return i+1		ï¿½Fiï¿½Ô–Ú‚Ì•Óï¿½
+//	return 0		ï¿½Fï¿½Oï¿½pï¿½`ï¿½ï¿½ï¿½ï¿½
 //*****************************************************************************
 int ElementClass::inouton(int _nodenum, vector<NodeClass> _node) {
 	double vecpro0 = _node[node[0]].vecpro(_node[node[1]], _node[_nodenum]);
@@ -90,27 +91,27 @@ int ElementClass::inouton(int _nodenum, vector<NodeClass> _node) {
 	double vecpro4 = _node[node[1]].vecpro(_node[node[0]], _node[_nodenum]);
 	double vecpro5 = _node[node[2]].vecpro(_node[node[1]], _node[_nodenum]);
 
-	//•Ó2ŠO
+	//ï¿½ï¿½2ï¿½O
 	if (vecpro2 > 0.0 && (vecpro0 < 0.0 || (fabs(vecpro0) <= SELFEPS0 && vecpro5 > 0.0))) {
 		return -3;
 	}
-	//•Ó0ŠO
+	//ï¿½ï¿½0ï¿½O
 	else if (vecpro0 > 0.0 && (vecpro1 < 0.0 || (fabs(vecpro1) <= SELFEPS0 && vecpro3 > 0.0))) {
 		return -1;
 	}
-	//•Ó1ŠO
+	//ï¿½ï¿½1ï¿½O
 	else if (vecpro1 > 0.0 && (vecpro2 < 0.0 || (fabs(vecpro2) <= SELFEPS0 && vecpro4 > 0.0))) {
 		return -2;
 	}
-	//•Ó2ã
+	//ï¿½ï¿½2ï¿½ï¿½
 	else if (fabs(vecpro0) <= SELFEPS1) {
 		return 3;
 	}
-	//•Ó0ã
+	//ï¿½ï¿½0ï¿½ï¿½
 	else if (fabs(vecpro1) <= SELFEPS1) {
 		return 1;
 	}
-	//•Ó1ã
+	//ï¿½ï¿½1ï¿½ï¿½
 	else if (fabs(vecpro2) <= SELFEPS1) {
 		return 2;
 	}
@@ -119,7 +120,7 @@ int ElementClass::inouton(int _nodenum, vector<NodeClass> _node) {
 
 
 //*****************************************************************************
-//w’è‚³‚ê‚½’¸“_‚ª‰½”Ô–Ú‚©•Ô‚·
+//ï¿½wï¿½è‚³ï¿½ê‚½ï¿½ï¿½ï¿½_ï¿½ï¿½ï¿½ï¿½ï¿½Ô–Ú‚ï¿½ï¿½Ô‚ï¿½
 //*****************************************************************************
 int ElementClass::nodeorder(int _nodenum) {
 	for (int i = 0; i < 3; i++) {
@@ -132,7 +133,7 @@ int ElementClass::nodeorder(int _nodenum) {
 
 
 //*****************************************************************************
-//w’è‚³‚ê‚½—v‘f‚Æ‚ÌˆÊ’uŠÖŒW‚ğ•Ô‚·
+//ï¿½wï¿½è‚³ï¿½ê‚½ï¿½vï¿½fï¿½Æ‚ÌˆÊ’uï¿½ÖŒWï¿½ï¿½Ô‚ï¿½
 //*****************************************************************************
 int ElementClass::oppositenode(int _elementname) {
 	for (int i = 0; i < 3; i++) {
@@ -145,17 +146,17 @@ int ElementClass::oppositenode(int _elementname) {
 
 
 //*****************************************************************************
-//’¸Šp‚ğŒvZ
+//ï¿½ï¿½ï¿½pï¿½ï¿½ï¿½vï¿½Z
 //*****************************************************************************
 void ElementClass::getangle(vector<NodeClass> _node) {
 	for (int i = 0; i < 3; i++) {
-		angle[i] = _node[node[i]].innpro(_node[node[(i + 1) % 3]], _node[node[(i + 2) % 3]]) / (_node[node[i]].distance(_node[node[(i + 1) % 3]]) * _node[node[i]].distance(_node[node[(i + 2) % 3]]));
+		angle[i] = 180.0*acos(_node[node[i]].innpro(_node[node[(i + 1) % 3]], _node[node[(i + 2) % 3]]) / (_node[node[i]].distance(_node[node[(i + 1) % 3]]) * _node[node[i]].distance(_node[node[(i + 2) % 3]]))) / M_PI;
 	}
 }
 
 
 //*****************************************************************************
-//—v‘f‚Ì–ÊÏ‚ğ•Ô‚·
+//ï¿½vï¿½fï¿½Ì–ÊÏ‚ï¿½Ô‚ï¿½
 //*****************************************************************************
 double ElementClass::space(vector<NodeClass> _node) {
 	return 0.5*_node[node[0]].vecpro(_node[node[1]], _node[node[2]]);

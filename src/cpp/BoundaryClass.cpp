@@ -2,11 +2,11 @@
 //Title		:Delaunay BoundaryClass
 //Purpose	:Boundary for Delaunay Triangulation Method
 //Author	:Tanabe Yuta
-//Date		:2018/09/27`
+//Date		:2018/09/27ï¿½`
 //Copyright	:(C) 2018 Tanabe Yuta
 //*****************************************************************************
 
-#include "pch.h"
+
 #include "BoundaryClass.h"
 
 
@@ -17,7 +17,7 @@ BoundaryClass::~BoundaryClass(){}
 
 
 //*****************************************************************************
-//ß“_‚Ì‹«ŠE‚É‚¨‚¯‚é”Ô†‚ğ•Ô‚·
+//ï¿½ß“_ï¿½Ì‹ï¿½ï¿½Eï¿½É‚ï¿½ï¿½ï¿½ï¿½ï¿½Ôï¿½ï¿½ï¿½Ô‚ï¿½
 //*****************************************************************************
 int BoundaryClass::order(int _nodenum) {
 	for (int i = 0; i < nodelist.size(); i++) {

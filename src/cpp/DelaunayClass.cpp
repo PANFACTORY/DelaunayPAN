@@ -2,11 +2,11 @@
 //Title		:Delaunay SolverClass
 //Purpose	:Solver for Delaunay Triangulation Method
 //Author	:Tanabe Yuta
-//Date		:2018/09/27`
+//Date		:2018/09/27ï¿½`
 //Copyright	:(C) 2018 Tanabe Yuta
 //*****************************************************************************
 
-#include "pch.h"
+
 #include "DelaunayClass.h"
 
 #define _USE_MATH_DEFINES
@@ -14,7 +14,7 @@
 #include <iostream>
 
 
-#define ADDITIONALNODENUM0	6000			//•Ó‚Ì’·‚³‚É‚æ‚é×•ªŠ„”
+#define ADDITIONALNODENUM0	100000			//ï¿½Ó‚Ì’ï¿½ï¿½ï¿½ï¿½É‚ï¿½ï¿½×•ï¿½ï¿½ï¿½ï¿½ï¿½
 
 
 DelaunayClass::DelaunayClass() {}
@@ -24,13 +24,13 @@ DelaunayClass::~DelaunayClass() {}
 
 
 //*****************************************************************************
-//DelaunayTriangulation‚Ìˆê˜A‚Ìˆ—
+//DelaunayTriangulationï¿½Ìˆï¿½Aï¿½Ìï¿½ï¿½ï¿½
 //*****************************************************************************
 void DelaunayClass::delaunaymain(vector<NodeClass> &_node, vector<ElementClass> &_element, vector<BoundaryClass> &_boundary, double _maxsize, int _laplaciannum) {
-	//----------SuperTriangle‚Ì¶¬----------
+	//----------SuperTriangleï¿½Ìï¿½ï¿½ï¿½----------
 	getsupertriangle(_node, _element);
 
-	//----------‹«ŠE‚Ì¶¬----------
+	//----------ï¿½ï¿½ï¿½Eï¿½Ìï¿½ï¿½ï¿½----------
 	for (int i = 0; i < _boundary.size(); i++) {
 		getboundary(_node, _element, _boundary[i]);
 	}
@@ -38,25 +38,25 @@ void DelaunayClass::delaunaymain(vector<NodeClass> &_node, vector<ElementClass> 
 		deactivate(_node, _element, _boundary[i]);
 	}
 
-	//----------•s—v‚È—v‘f‚Ìíœ----------
+	//----------ï¿½sï¿½vï¿½È—vï¿½fï¿½Ìíœ----------
 	deletesupertriangle(_node, _element);
 	deleteelement(_element);
 
-	//----------—v‘f—v‘fŠÔ—×ÚŠÖŒW‚ğC•œ----------
+	//----------ï¿½vï¿½fï¿½vï¿½fï¿½Ô—×ÚŠÖŒWï¿½ï¿½ï¿½Cï¿½ï¿½----------
 	sortelement(_element);
 
 	if (_maxsize > 0) {
-		//----------’Ç‰Á‚Åß“_‚ğ”z’u----------
+		//----------ï¿½Ç‰ï¿½ï¿½Åß“_ï¿½ï¿½zï¿½u----------
 		getinternalelement(_node, _element, _maxsize);
 
-		//----------Laplacian–@‚É‚æ‚éß“_‚ÌC³----------
+		//----------Laplacianï¿½@ï¿½É‚ï¿½ï¿½ß“_ï¿½ÌCï¿½ï¿½----------
 		laplacian(_node, _element, _laplaciannum);
 	}
 }
 
 
 //*****************************************************************************
-//—v‘f“à‚É“_‚ª‚«‚½‚Æ‚«
+//ï¿½vï¿½fï¿½ï¿½ï¿½É“_ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ‚ï¿½
 //*****************************************************************************
 void DelaunayClass::getelementin(vector<NodeClass> &_node, vector<ElementClass> &_element, int _nowtri, int _nodenump1, int _nodenum, int _nodenumm1) {
 	vector<int> stack;
@@ -66,7 +66,7 @@ void DelaunayClass::getelementin(vector<NodeClass> &_node, vector<ElementClass> 
 	tmpelement[1].side[0] = _element[_nowtri].side[1];
 	tmpelement[2].side[0] = _element[_nowtri].side[2];
 
-	//‹«ŠE•Ó”»’è
+	//ï¿½ï¿½ï¿½Eï¿½Ó”ï¿½ï¿½ï¿½
 	if (_element[_nowtri].node[0] == _nodenumm1 || _element[_nowtri].node[0] == _nodenump1) {
 		tmpelement[1].side[1] = true;
 		tmpelement[2].side[2] = true;
@@ -108,19 +108,19 @@ void DelaunayClass::getelementin(vector<NodeClass> &_node, vector<ElementClass> 
 	_element.push_back(tmpelement[1]);
 	_element.push_back(tmpelement[2]);
 
-	//.....ƒXƒƒbƒsƒ“ƒO.....
+	//.....ï¿½Xï¿½ï¿½ï¿½bï¿½sï¿½ï¿½ï¿½O.....
 	swapping(_node, _element, stack, _nodenump1, _nodenumm1);
 }
 
 
 //*****************************************************************************
-//•Óã‚É“_‚ª‚«‚½‚Æ‚«
+//ï¿½Óï¿½É“_ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ‚ï¿½
 //*****************************************************************************
 void DelaunayClass::getelementon(vector<NodeClass> &_node, vector<ElementClass> &_element, int _nowtri, int _pos, int _nodenump1, int _nodenum, int _nodenumm1) {
 	vector<int> stack;
 	int nownode = _pos;
 	int neitri = _element[_nowtri].neighbor[nownode];
-	//•Ó‚ğ‹²‚ñ‚Å—×Ú—v‘f‚ª‘¶İ‚·‚é‚Æ‚«
+	//ï¿½Ó‚ï¿½ï¿½ï¿½ï¿½ï¿½Å—×Ú—vï¿½fï¿½ï¿½ï¿½ï¿½ï¿½İ‚ï¿½ï¿½ï¿½Æ‚ï¿½
 	if (neitri != -1 && _element[neitri].active == true) {
 		int neinode = _element[neitri].oppositenode(_nowtri);
 		vector<ElementClass> tmptri(4);			//0:nowtri	1:neitri
@@ -191,7 +191,7 @@ void DelaunayClass::getelementon(vector<NodeClass> &_node, vector<ElementClass> 
 		_element.push_back(tmptri[2]);
 		_element.push_back(tmptri[3]);
 	}
-	//•Ó‚ğ‹²‚ñ‚Å—×Ú—v‘f‚ª‘¶İ‚µ‚È‚¢‚Æ‚«
+	//ï¿½Ó‚ï¿½ï¿½ï¿½ï¿½ï¿½Å—×Ú—vï¿½fï¿½ï¿½ï¿½ï¿½ï¿½İ‚ï¿½ï¿½È‚ï¿½ï¿½Æ‚ï¿½
 	else {
 		vector<ElementClass> tmptri(2);
 
@@ -234,22 +234,22 @@ void DelaunayClass::getelementon(vector<NodeClass> &_node, vector<ElementClass> 
 		_element[_nowtri].copy(tmptri[0]);
 		_element.push_back(tmptri[1]);
 	}
-	//.....ƒXƒƒbƒsƒ“ƒO.....
+	//.....ï¿½Xï¿½ï¿½ï¿½bï¿½sï¿½ï¿½ï¿½O.....
 	swapping(_node, _element, stack, _nodenump1, _nodenumm1);
 }
 
 
 //*****************************************************************************
-//ƒXƒƒbƒsƒ“ƒO
+//ï¿½Xï¿½ï¿½ï¿½bï¿½sï¿½ï¿½ï¿½O
 //*****************************************************************************
 void DelaunayClass::swapping(vector<NodeClass> &_node, vector<ElementClass> &_element, vector<int> &_stack, int _nodenump1, int _nodenumm1) {
 	while (_stack.size() > 0) {
-		//ƒXƒ^ƒbƒN––”ö‚Ì—v‘f‚ğæ‚èo‚·
+		//ï¿½Xï¿½^ï¿½bï¿½Nï¿½ï¿½ï¿½ï¿½ï¿½Ì—vï¿½fï¿½ï¿½ï¿½ï¿½ï¿½oï¿½ï¿½
 		int nowstack = _stack[_stack.size() - 1];
 		_stack.pop_back();
-		//ƒXƒ^ƒbƒN‚©‚çæ‚èo‚µ‚½—v‘f‚É—×Ú‚·‚é—v‘f‚ğæ“¾
+		//ï¿½Xï¿½^ï¿½bï¿½Nï¿½ï¿½ï¿½ï¿½ï¿½ï¿½oï¿½ï¿½ï¿½ï¿½ï¿½vï¿½fï¿½É—×Ú‚ï¿½ï¿½ï¿½vï¿½fï¿½ï¿½ï¿½æ“¾
 		int neighbortri = _element[nowstack].neighbor[0];
-		//—×Ú‚·‚éOŠpŒ`—v‘f‚ª‘¶İ‚·‚é‚Æ‚«
+		//ï¿½×Ú‚ï¿½ï¿½ï¿½Oï¿½pï¿½`ï¿½vï¿½fï¿½ï¿½ï¿½ï¿½ï¿½İ‚ï¿½ï¿½ï¿½Æ‚ï¿½
 		if (neighbortri >= 0 && _element[neighbortri].active == true) {
 			int neighbornode = _element[neighbortri].oppositenode(nowstack);
 			double r0 = _node[_element[nowstack].node[1]].distance(_node[_element[nowstack].node[2]]);
@@ -258,7 +258,7 @@ void DelaunayClass::swapping(vector<NodeClass> &_node, vector<ElementClass> &_el
 				&& _element[nowstack].inouton(_element[neighbortri].node[neighbornode], _node) == -1
 				&& _element[neighbortri].inouton(_element[nowstack].node[0], _node) == -(neighbornode + 1)
 				&& _element[nowstack].side[0] == false) {
-				cout << "!";
+				//cout << "!";
 
 				ElementClass tmpelement;
 				tmpelement.copy(_element[neighbortri]);
@@ -281,7 +281,7 @@ void DelaunayClass::swapping(vector<NodeClass> &_node, vector<ElementClass> &_el
 				_element[nowstack].setnode(_element[nowstack].node[0], _element[nowstack].node[1], tmpelement.node[neighbornode]);
 				_element[nowstack].setneighbor(tmpelement.neighbor[(neighbornode + 1) % 3], neighbortri, _element[nowstack].neighbor[2]);
 
-				//‹«ŠE•Ó”»’è
+				//ï¿½ï¿½ï¿½Eï¿½Ó”ï¿½ï¿½ï¿½
 				if (_element[nowstack].node[2] == _nodenumm1 || _element[nowstack].node[2] == _nodenump1) {
 					_element[nowstack].side[1] = true;
 					_element[neighbortri].side[2] = true;
@@ -299,17 +299,17 @@ void DelaunayClass::swapping(vector<NodeClass> &_node, vector<ElementClass> &_el
 
 
 //*****************************************************************************
-//SuperTriangle‚Ì¶¬
+//SuperTriangleï¿½Ìï¿½ï¿½ï¿½
 //*****************************************************************************
 void DelaunayClass::getsupertriangle(vector<NodeClass> &_node, vector<ElementClass> &_element) {
-	//Œ´“_‚©‚çÅ‚à—£‚ê‚½“_‚ğ’Tõ
+	//ï¿½ï¿½ï¿½_ï¿½ï¿½ï¿½ï¿½Å‚ï¿½ï¿½ï¿½ï¿½ê‚½ï¿½_ï¿½ï¿½Tï¿½ï¿½
 	double rmax = 0.0;
 	for (int i = 0; i < _node.size(); i++) {
 		if (rmax < sqrt(pow(_node[i].x, 2.0) + pow(_node[i].y, 2.0))) {
 			rmax = sqrt(pow(_node[i].x, 2.0) + pow(_node[i].y, 2.0));
 		}
 	}
-	//rmax‚Ì1.5”{‚Ì’¼Œa‚ğ‚Â‰~‚ğ“àÚ‰~‚É‚ÂOŠpŒ`‚ğ¶¬
+	//rmaxï¿½ï¿½1.5ï¿½{ï¿½Ì’ï¿½ï¿½aï¿½ï¿½ï¿½ï¿½ï¿½Â‰~ï¿½ï¿½ï¿½ï¿½Ú‰~ï¿½Éï¿½ï¿½ÂOï¿½pï¿½`ï¿½ğ¶ï¿½
 	vector<NodeClass> st(3);
 	ElementClass superelement;
 	for (int i = 0; i < 3; i++) {
@@ -323,7 +323,7 @@ void DelaunayClass::getsupertriangle(vector<NodeClass> &_node, vector<ElementCla
 
 
 //*****************************************************************************
-//SuperTriangle‚Ì–³Œø‰»
+//SuperTriangleï¿½Ì–ï¿½ï¿½ï¿½ï¿½ï¿½
 //*****************************************************************************
 void DelaunayClass::deletesupertriangle(vector<NodeClass> &_node, vector<ElementClass> &_element) {
 	for (int i = _element.size() - 1; i >= 0; i--) {
@@ -341,11 +341,11 @@ void DelaunayClass::deletesupertriangle(vector<NodeClass> &_node, vector<Element
 
 
 //*****************************************************************************
-//‹«ŠE‚Ì¶¬
+//ï¿½ï¿½ï¿½Eï¿½Ìï¿½ï¿½ï¿½
 //*****************************************************************************
 void DelaunayClass::getboundary(vector<NodeClass> &_node, vector<ElementClass> &_element, BoundaryClass _boundary) {
 	for (int i = 0; i < _boundary.nodelist.size(); i++) {
-		//.....‚Ü‚¾İ’u‚³‚ê‚Ä‚¢‚È‚¢‚Æ‚«.....
+		//.....ï¿½Ü‚ï¿½ï¿½İ’uï¿½ï¿½ï¿½ï¿½Ä‚ï¿½ï¿½È‚ï¿½ï¿½Æ‚ï¿½.....
 		if (_node[_boundary.nodelist[i]].set == false) {
 			_node[_boundary.nodelist[i]].set = true;
 			int nowtri = 0;
@@ -354,10 +354,10 @@ void DelaunayClass::getboundary(vector<NodeClass> &_node, vector<ElementClass> &
 			}
 			_node[_boundary.nodelist[i]].type = true;
 
-			//.....•ïŠÜOŠpŒ`‚Ì’Tõ.....
+			//.....ï¿½ï¿½ÜOï¿½pï¿½`ï¿½Ì’Tï¿½ï¿½.....
 			for (int j = 0; j < _element.size(); j++) {
 				int pos = _element[nowtri].inouton(_boundary.nodelist[i], _node);
-				//—v‘fŠO‚É‚ ‚é
+				//ï¿½vï¿½fï¿½Oï¿½É‚ï¿½ï¿½é
 				if (pos < 0 || _element[nowtri].active == false) {
 					if (_element[nowtri].neighbor[abs(pos) - 1] >= 0) {
 						nowtri = _element[nowtri].neighbor[abs(pos) - 1];
@@ -366,9 +366,9 @@ void DelaunayClass::getboundary(vector<NodeClass> &_node, vector<ElementClass> &
 						cout << "Out of triangle Error!\n";
 					}
 				}
-				//—v‘f“à‚É‚ ‚é
+				//ï¿½vï¿½fï¿½ï¿½ï¿½É‚ï¿½ï¿½é
 				else if (pos == 0) {
-					cout << "\nin->" << nowtri << "\t";
+					//cout << "\nin->" << nowtri << "\t";
 					if (i == 0) {
 						getelementin(_node, _element, nowtri, _boundary.nodelist[i + 1], _boundary.nodelist[i], -2);
 					}
@@ -380,9 +380,9 @@ void DelaunayClass::getboundary(vector<NodeClass> &_node, vector<ElementClass> &
 					}
 					break;
 				}
-				//•Óã‚É‚ ‚é
+				//ï¿½Óï¿½É‚ï¿½ï¿½é
 				else {
-					cout << "\non->" << nowtri << "\t";
+					//cout << "\non->" << nowtri << "\t";
 					if (i == 0) {
 						getelementon(_node, _element, nowtri, pos - 1, _boundary.nodelist[i + 1], _boundary.nodelist[i], -2);
 					}
@@ -401,7 +401,7 @@ void DelaunayClass::getboundary(vector<NodeClass> &_node, vector<ElementClass> &
 
 
 //*****************************************************************************
-//—v‘f‚ğ–³Œø‰»
+//ï¿½vï¿½fï¿½ğ–³Œï¿½ï¿½ï¿½
 //*****************************************************************************
 void DelaunayClass::deactivate(vector<NodeClass> &_node, vector<ElementClass> &_element, BoundaryClass _boundary) {
 	for (int i = _element.size() - 1; i >= 0; i--) {
@@ -443,7 +443,7 @@ void DelaunayClass::deactivate(vector<NodeClass> &_node, vector<ElementClass> &_
 
 
 //*****************************************************************************
-//—v‘f—v‘fŠÔ—×ÚŠÖŒW‚ÌC•œ
+//ï¿½vï¿½fï¿½vï¿½fï¿½Ô—×ÚŠÖŒWï¿½ÌCï¿½ï¿½
 //*****************************************************************************
 void DelaunayClass::sortelement(vector<ElementClass> &_element) {
 	for (int i = 0; i < _element.size(); i++) {
@@ -463,12 +463,12 @@ void DelaunayClass::sortelement(vector<ElementClass> &_element) {
 
 
 //*****************************************************************************
-//“à•”“_‚Ì¶¬
+//ï¿½ï¿½ï¿½ï¿½ï¿½_ï¿½Ìï¿½ï¿½ï¿½
 //*****************************************************************************
 void DelaunayClass::getinternalelement(vector<NodeClass> &_node, vector<ElementClass> &_element, double _maxside) {
-	//•Ó‚Ì’·‚¢—v‘f‚ğ•ªŠ„
+	//ï¿½Ó‚Ì’ï¿½ï¿½ï¿½ï¿½vï¿½fï¿½ğ•ªŠï¿½
 	for (int i = 0; i < ADDITIONALNODENUM0; i++) {
-		//’Ç‰Á‚·‚éß“_‚ğ¶¬
+		//ï¿½Ç‰ï¿½ï¿½ï¿½ï¿½ï¿½ß“_ï¿½ğ¶ï¿½
 		double maxside = _node[_element[0].node[0]].distance(_node[_element[0].node[1]]);
 		int maxelement = 0, maxnode = 0;
 		for (int j = 0; j < _element.size(); j++) {
@@ -482,7 +482,7 @@ void DelaunayClass::getinternalelement(vector<NodeClass> &_node, vector<ElementC
 		}
 
 		if (maxside < _maxside) {
-			cout << "\ni=" << i << "\t" << "maxside=" << maxside << "\n";
+			//cout << "\ni=" << i << "\t" << "maxside=" << maxside << "\n";
 			break;
 		}
 
@@ -491,15 +491,15 @@ void DelaunayClass::getinternalelement(vector<NodeClass> &_node, vector<ElementC
 		addnode.y = (_node[_element[maxelement].node[(maxnode + 1) % 3]].y + _node[_element[maxelement].node[(maxnode + 2) % 3]].y) / 2.0;
 		_node.push_back(addnode);
 
-		//’Ç‰Á‚µ‚½ß“_‚Å—v‘f•ªŠ„
-		cout << "\non-->" << maxelement << "\t";
+		//ï¿½Ç‰ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ß“_ï¿½Å—vï¿½fï¿½ï¿½ï¿½ï¿½
+		//cout << "\non-->" << maxelement << "\t";
 		getelementon(_node, _element, maxelement, maxnode, -2, _node.size() - 1, -2);
 	}
 }
 
 
 //*****************************************************************************
-//–³Œø‰»‚³‚ê‚½—v‘f‚ğíœ
+//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ê‚½ï¿½vï¿½fï¿½ï¿½ï¿½íœ
 //*****************************************************************************
 void DelaunayClass::deleteelement(vector<ElementClass> &_element) {
 	for (int i = _element.size() - 1; i >= 0; i--) {
@@ -511,19 +511,19 @@ void DelaunayClass::deleteelement(vector<ElementClass> &_element) {
 
 
 //*****************************************************************************
-//Laplacian–@
+//Laplacianï¿½@
 //*****************************************************************************
 void DelaunayClass::laplacian(vector<NodeClass> &_node, vector<ElementClass> &_element, int _maxnum) {
 	vector<int> logstack;
-	int logstacknum = 10;			//“¯‚¶ß“_‚Î‚©‚è‚ğC³‚µ‚È‚¢‚æ‚¤‚É’¼‹ß‚ÉC³‚µ‚½‚à‚Ì‚ğƒXƒgƒbƒN
+	int logstacknum = 100;			//ï¿½ï¿½ï¿½ï¿½ï¿½ß“_ï¿½Î‚ï¿½ï¿½ï¿½ï¿½ï¿½Cï¿½ï¿½ï¿½ï¿½ï¿½È‚ï¿½ï¿½æ‚¤ï¿½É’ï¿½ï¿½ß‚ÉCï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ì‚ï¿½ï¿½Xï¿½gï¿½bï¿½N
 	for (int i = 0; i < _maxnum; i++) {
-		//’¸ŠpÅ‘å—v‘f‚Æ‚»‚Ì—v‘f”Ô†‚ğ’Tõ
+		//ï¿½ï¿½ï¿½pï¿½Å‘ï¿½vï¿½fï¿½Æ‚ï¿½ï¿½Ì—vï¿½fï¿½Ôï¿½ï¿½ï¿½Tï¿½ï¿½
 		double angmax = 0.0;
 		int elemax = -1, nodemax = -1;
 		for (int j = 0; j < _element.size(); j++) {
 			for (int k = 0; k < 3; k++) {
-				if (angmax < abs(0.5 - abs(_element[j].angle[k])) && _node[_element[j].node[k]].type == false) {
-					angmax = abs(0.5 - abs(_element[j].angle[k]));
+				if (angmax < fabs(60.0 - _element[j].angle[k]) && _node[_element[j].node[k]].type == false) {
+					angmax = fabs(60.0 - _element[j].angle[k]);
 					elemax = j;
 					nodemax = _element[j].node[k];
 				}
@@ -540,7 +540,7 @@ void DelaunayClass::laplacian(vector<NodeClass> &_node, vector<ElementClass> &_e
 			logstack.erase(logstack.begin());
 		}
 
-		//’¸ŠpÅ‘å—v‘f‚Æ—×Ú‚·‚é—v‘f‚ğƒXƒ^ƒbƒN‚É“ü‚ê‚é
+		//ï¿½ï¿½ï¿½pï¿½Å‘ï¿½vï¿½fï¿½Æ—×Ú‚ï¿½ï¿½ï¿½vï¿½fï¿½ï¿½ï¿½Xï¿½^ï¿½bï¿½Nï¿½É“ï¿½ï¿½ï¿½ï¿½
 		vector<int> stack;
 		int nowtri = elemax;
 		do{
@@ -548,7 +548,7 @@ void DelaunayClass::laplacian(vector<NodeClass> &_node, vector<ElementClass> &_e
 			nowtri = _element[nowtri].neighbor[(_element[nowtri].nodeorder(nodemax) + 1) % 3];
 		}while (nowtri != elemax);
 
-		//V‚µ‚¢À•W‚ğ‹‚ß‚é
+		//ï¿½Vï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Wï¿½ï¿½ï¿½ï¿½ï¿½ß‚ï¿½
 		double xdash = 0.0, ydash = 0.0;
 		for (int j = 0; j < stack.size(); j++) {
 			xdash += _node[_element[stack[j]].node[(_element[stack[j]].nodeorder(nodemax) + 1) % 3]].x 
@@ -562,9 +562,9 @@ void DelaunayClass::laplacian(vector<NodeClass> &_node, vector<ElementClass> &_e
 		_node[nodemax].x = xdash;
 		_node[nodemax].y = ydash;
 
-		cout << "\nLaplacian->" << nodemax << "\t" << xdash << "\t" << ydash;
+		//cout << "\nLaplacian->" << nodemax << "\t" << xdash << "\t" << ydash;
 
-		//’¸Šp‚ÌÄŒvZ
+		//ï¿½ï¿½ï¿½pï¿½ÌÄŒvï¿½Z
 		for (int j = 0; j < stack.size(); j++) {
 			_element[stack[j]].getangle(_node);
 		}

@@ -2,16 +2,17 @@
 //Title		:Delaunay NodeClass
 //Purpose	:Node for Delaunay Triangulation Method
 //Author	:Tanabe Yuta
-//Date		:2018/09/20`
+//Date		:2018/09/20ï¿½`
 //Copyright	:(C) 2018 Tanabe Yuta
 //*****************************************************************************
-#include "pch.h"
+
 #include "NodeClass.h"
+#include <cmath>
 
 
 NodeClass::NodeClass(){
-	set = false;			//‰‚ß‚Í“_‚Íİ’u‚³‚ê‚Ä‚¢‚È‚¢‚à‚Ì‚Æ‚·‚é
-	type = false;			//‰‚ß‚Í‹«ŠEã‚Ì“_‚Å‚Í‚È‚¢‚Æ‚·‚é
+	set = false;			//ï¿½ï¿½ï¿½ß‚Í“_ï¿½Íİ’uï¿½ï¿½ï¿½ï¿½Ä‚ï¿½ï¿½È‚ï¿½ï¿½ï¿½ï¿½Ì‚Æ‚ï¿½ï¿½ï¿½
+	type = false;			//ï¿½ï¿½ï¿½ß‚Í‹ï¿½ï¿½Eï¿½ï¿½Ì“_ï¿½Å‚Í‚È‚ï¿½ï¿½Æ‚ï¿½ï¿½ï¿½
 }
 
 
@@ -19,7 +20,7 @@ NodeClass::~NodeClass(){}
 
 
 //*****************************************************************************
-//ˆø”‚Éw’è‚³‚ê‚½ß“_‚Æ‚Ì‹——£‚ğ•Ô‚·
+//ï¿½ï¿½ï¿½ï¿½ï¿½Éwï¿½è‚³ï¿½ê‚½ï¿½ß“_ï¿½Æ‚Ì‹ï¿½ï¿½ï¿½ï¿½ï¿½Ô‚ï¿½
 //*****************************************************************************
 double NodeClass::distance(NodeClass _node) {
 	return sqrt(pow(x - _node.x, 2.0) + pow(y - _node.y, 2.0));
@@ -27,7 +28,7 @@ double NodeClass::distance(NodeClass _node) {
 
 
 //*****************************************************************************
-//©g‚©‚ç_node0‚Ö‚ÌƒxƒNƒgƒ‹‚Æ_node1‚Ö‚ÌƒxƒNƒgƒ‹‚ÌŠOÏ
+//ï¿½ï¿½ï¿½gï¿½ï¿½ï¿½ï¿½_node0ï¿½Ö‚Ìƒxï¿½Nï¿½gï¿½ï¿½ï¿½ï¿½_node1ï¿½Ö‚Ìƒxï¿½Nï¿½gï¿½ï¿½ï¿½ÌŠOï¿½ï¿½
 //*****************************************************************************
 double NodeClass::vecpro(NodeClass _node0, NodeClass _node1) {
 	return (_node0.x - x)*(_node1.y - y) - (_node0.y - y)*(_node1.x - x);
@@ -35,7 +36,7 @@ double NodeClass::vecpro(NodeClass _node0, NodeClass _node1) {
 
 
 //*****************************************************************************
-//©g‚©‚ç_node0‚Ö‚ÌƒxƒNƒgƒ‹‚Æ_node1‚Ö‚ÌƒxƒNƒgƒ‹‚ÌŠOÏ
+//ï¿½ï¿½ï¿½gï¿½ï¿½ï¿½ï¿½_node0ï¿½Ö‚Ìƒxï¿½Nï¿½gï¿½ï¿½ï¿½ï¿½_node1ï¿½Ö‚Ìƒxï¿½Nï¿½gï¿½ï¿½ï¿½ÌŠOï¿½ï¿½
 //*****************************************************************************
 double NodeClass::innpro(NodeClass _node0, NodeClass _node1) {
 	return (_node0.x - x)*(_node1.x - x) + (_node1.y - y)*(_node0.y - y);
