@@ -352,19 +352,19 @@ public:
 
 	template<class T>
 	void Delaunay<T>::getboundary(std::vector<Node<T> > &_node, std::vector<Element<T> > &_element, Boundary _boundary) {
-		for (int i = 0; i < _boundary.nodelist.size(); i++) {
+		for (int i = 0; i < _boundary.nodelists.size(); i++) {
 			//.....�܂��ݒu����Ă��Ȃ��Ƃ�.....
-			if (_node[_boundary.nodelist[i]].set == false) {
-				_node[_boundary.nodelist[i]].set = true;
+			if (_node[_boundary.nodelists[i]].set == false) {
+				_node[_boundary.nodelists[i]].set = true;
 				int nowtri = 0;
 				if (_element.size() > 0) {
 					nowtri = _element.size() - 1;
 				}
-				_node[_boundary.nodelist[i]].type = true;
+				_node[_boundary.nodelists[i]].type = true;
 
 				//.....��܎O�p�`�̒T��.....
 				for (int j = 0; j < _element.size(); j++) {
-					int pos = _element[nowtri].inouton(_boundary.nodelist[i], _node);
+					int pos = _element[nowtri].inouton(_boundary.nodelists[i], _node);
 					//�v�f�O�ɂ��鎞
 					if (pos < 0 || _element[nowtri].active == false) {
 						if (_element[nowtri].neighbors[abs(pos) - 1] >= 0) {
@@ -377,26 +377,26 @@ public:
 					//�v�f���ɂ��鎞
 					else if (pos == 0) {
 						if (i == 0) {
-							getelementin(_node, _element, nowtri, _boundary.nodelist[i + 1], _boundary.nodelist[i], -2);
+							getelementin(_node, _element, nowtri, _boundary.nodelists[i + 1], _boundary.nodelists[i], -2);
 						}
-						else if (i == _boundary.nodelist.size() - 1) {
-							getelementin(_node, _element, nowtri, _boundary.nodelist[0], _boundary.nodelist[i], _boundary.nodelist[i - 1]);
+						else if (i == _boundary.nodelists.size() - 1) {
+							getelementin(_node, _element, nowtri, _boundary.nodelists[0], _boundary.nodelists[i], _boundary.nodelists[i - 1]);
 						}
 						else {
-							getelementin(_node, _element, nowtri, _boundary.nodelist[i + 1], _boundary.nodelist[i], _boundary.nodelist[i - 1]);
+							getelementin(_node, _element, nowtri, _boundary.nodelists[i + 1], _boundary.nodelists[i], _boundary.nodelists[i - 1]);
 						}
 						break;
 					}
 					//�ӏ�ɂ��鎞
 					else {
 						if (i == 0) {
-							getelementon(_node, _element, nowtri, pos - 1, _boundary.nodelist[i + 1], _boundary.nodelist[i], -2);
+							getelementon(_node, _element, nowtri, pos - 1, _boundary.nodelists[i + 1], _boundary.nodelists[i], -2);
 						}
-						else if (i == _boundary.nodelist.size() - 1) {
-							getelementon(_node, _element, nowtri, pos - 1, _boundary.nodelist[0], _boundary.nodelist[i], _boundary.nodelist[i - 1]);
+						else if (i == _boundary.nodelists.size() - 1) {
+							getelementon(_node, _element, nowtri, pos - 1, _boundary.nodelists[0], _boundary.nodelists[i], _boundary.nodelists[i - 1]);
 						}
 						else {
-							getelementon(_node, _element, nowtri, pos - 1, _boundary.nodelist[i + 1], _boundary.nodelist[i], _boundary.nodelist[i - 1]);
+							getelementon(_node, _element, nowtri, pos - 1, _boundary.nodelists[i + 1], _boundary.nodelists[i], _boundary.nodelists[i - 1]);
 						}
 						break;
 					}
@@ -508,9 +508,8 @@ public:
 	template<class T>
 	void Delaunay<T>::laplacian(std::vector<Node<T> > &_node, std::vector<Element<T> > &_element, int _maxnum) {
 		std::vector<int> logstack;
-		int logstacknum = 100;			//�����ߓ_�΂�����C�����Ȃ��悤�ɒ��߂ɏC���������̂��X�g�b�N
+		int logstacknum = 100;			
 		for (int i = 0; i < _maxnum; i++) {
-			//���p�ő�v�f�Ƃ��̗v�f�ԍ���T��
 			T angmax = 0.0;
 			int elemax = -1, nodemax = -1;
 			for (int j = 0; j < _element.size(); j++) {
@@ -533,7 +532,6 @@ public:
 				logstack.erase(logstack.begin());
 			}
 
-			//���p�ő�v�f�Ɨאڂ���v�f���X�^�b�N�ɓ����
 			std::vector<int> stack;
 			int nowtri = elemax;
 			do{
@@ -541,13 +539,12 @@ public:
 				nowtri = _element[nowtri].neighbors[(_element[nowtri].nodeorder(nodemax) + 1) % 3];
 			}while (nowtri != elemax);
 
-			//�V�������W�����߂�
-			T xdash = 0.0, ydash = 0.0;
-			for (int j = 0; j < stack.size(); j++) {
-				xdash += _node[_element[stack[j]].nodes[(_element[stack[j]].nodeorder(nodemax) + 1) % 3]].x 
-					+ _node[_element[stack[j]].nodes[(_element[stack[j]].nodeorder(nodemax) + 1) % 3]].x;
-				ydash += _node[_element[stack[j]].nodes[(_element[stack[j]].nodeorder(nodemax) + 1) % 3]].y
-					+ _node[_element[stack[j]].nodes[(_element[stack[j]].nodeorder(nodemax) + 1) % 3]].y;
+			T xdash = T(), ydash = T();
+			for (auto j : stack) {
+				xdash += _node[_element[j].nodes[(_element[j].nodeorder(nodemax) + 1) % 3]].x 
+					+ _node[_element[j].nodes[(_element[j].nodeorder(nodemax) + 1) % 3]].x;
+				ydash += _node[_element[j].nodes[(_element[j].nodeorder(nodemax) + 1) % 3]].y
+					+ _node[_element[j].nodes[(_element[j].nodeorder(nodemax) + 1) % 3]].y;
 			}
 			xdash /= 2.0*(T)stack.size();
 			ydash /= 2.0*(T)stack.size();
@@ -555,9 +552,8 @@ public:
 			_node[nodemax].x = xdash;
 			_node[nodemax].y = ydash;
 
-			//���p�̍Čv�Z
-			for (int j = 0; j < stack.size(); j++) {
-				_element[stack[j]].getangle(_node);
+			for (auto j : stack) {
+				_element[j].getangle(_node);
 			}
 		}
 	}

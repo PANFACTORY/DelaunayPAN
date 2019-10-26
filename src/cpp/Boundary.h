@@ -17,7 +17,7 @@ public:
 		Boundary();
 		~Boundary();
 
-		std::vector<int> nodelist;		//list of nodes on boundary
+		std::vector<int> nodelists;		//list of nodes on boundary
 		bool type;						//type of boundary 
 
 		int order(int _nodenum);		//get order id on boundary
@@ -31,8 +31,8 @@ public:
 
 
 	int Boundary::order(int _nodenum) {
-		for (int i = 0; i < nodelist.size(); i++) {
-			if (nodelist[i] == _nodenum) {
+		for (int i = 0; i < this->nodelists.size(); i++) {
+			if (this->nodelists[i] == _nodenum) {
 				return i;
 			}
 		}

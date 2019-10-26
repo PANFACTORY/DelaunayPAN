@@ -146,7 +146,7 @@ void importboundary(vector<Boundary> &_boundary, string _fname, bool _type) {
 	}
 
 	while (getline(fin, tmp)) {
-		tmpboundary.nodelist.push_back(stoi(tmp));
+		tmpboundary.nodelists.push_back(stoi(tmp));
 	}
 		
 	fin.close();
