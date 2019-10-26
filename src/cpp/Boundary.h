@@ -22,4 +22,20 @@ public:
 
 		int order(int _nodenum);		//get order id on boundary
 	};
+
+
+	Boundary::Boundary(){}
+
+
+	Boundary::~Boundary(){}
+
+
+	int Boundary::order(int _nodenum) {
+		for (int i = 0; i < nodelist.size(); i++) {
+			if (nodelist[i] == _nodenum) {
+				return i;
+			}
+		}
+		return -1;
+	}
 }
