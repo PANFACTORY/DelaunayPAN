@@ -54,9 +54,9 @@ namespace DelaunayPAN{
 
 
 	template<class T>
-	void getelementin(std::vector<Node<T> > &_nodes, std::vector<Element<T> > &_elements, int _nowtri, int _nodenump1, int _nodenum, int _nodenumm1) {
+	void getelementin(std::vector<Node<T> >& _nodes, std::vector<Element<T> >& _elements, int _nowtri, int _nodenump1, int _nodenum, int _nodenumm1) {
 		std::vector<int> stack;
-		std::vector<Element<T> > tmpelement(3);
+		std::array<Element<T>, 3> tmpelement;
 
 		tmpelement[0].sides[0] = _elements[_nowtri].sides[0];
 		tmpelement[1].sides[0] = _elements[_nowtri].sides[1];
@@ -108,39 +108,39 @@ namespace DelaunayPAN{
 
 
 	template<class T>
-	void getelementon(std::vector<Node<T> > &_node, std::vector<Element<T> > &_element, int _nowtri, int _pos, int _nodenump1, int _nodenum, int _nodenumm1) {
+	void getelementon(std::vector<Node<T> >& _nodes, std::vector<Element<T> >& _elements, int _nowtri, int _pos, int _nodenump1, int _nodenum, int _nodenumm1) {
 		std::vector<int> stack;
 		int nownode = _pos;
-		int neitri = _element[_nowtri].neighbors[nownode];
+		int neitri = _elements[_nowtri].neighbors[nownode];
 		
-		if (neitri != -1 && _element[neitri].active == true) {
-			int neinode = _element[neitri].oppositenode(_nowtri);
-			std::vector<Element<T> > tmptri(4);			//0:nowtri	1:neitri
+		if (neitri != -1 && _elements[neitri].active == true) {
+			int neinode = _elements[neitri].oppositenode(_nowtri);
+			std::array<Element<T>, 4> tmptri;			//0:nowtri	1:neitri
 
-			tmptri[0].setnode(_nodenum, _element[_nowtri].nodes[nownode], _element[_nowtri].nodes[(nownode + 1) % 3]);
-			tmptri[0].setneighbor(_element[_nowtri].neighbors[(nownode + 2) % 3], neitri, _element.size());
-			tmptri[0].setside(_element[_nowtri].sides[(nownode + 2) % 3], false, false);
+			tmptri[0].setnode(_nodenum, _elements[_nowtri].nodes[nownode], _elements[_nowtri].nodes[(nownode + 1) % 3]);
+			tmptri[0].setneighbor(_elements[_nowtri].neighbors[(nownode + 2) % 3], neitri, _elements.size());
+			tmptri[0].setside(_elements[_nowtri].sides[(nownode + 2) % 3], false, false);
 
-			tmptri[1].setnode(_nodenum, _element[_nowtri].nodes[(nownode + 1) % 3], _element[neitri].nodes[neinode]);
-			tmptri[1].setneighbor(_element[neitri].neighbors[(neinode + 1) % 3], _element.size() + 1, _nowtri);
-			tmptri[1].setside(_element[neitri].sides[(neinode + 1) % 3], false, false);
+			tmptri[1].setnode(_nodenum, _elements[_nowtri].nodes[(nownode + 1) % 3], _elements[neitri].nodes[neinode]);
+			tmptri[1].setneighbor(_elements[neitri].neighbors[(neinode + 1) % 3], _elements.size() + 1, _nowtri);
+			tmptri[1].setside(_elements[neitri].sides[(neinode + 1) % 3], false, false);
 
-			tmptri[2].setnode(_nodenum, _element[_nowtri].nodes[(nownode + 2) % 3], _element[_nowtri].nodes[nownode]);
-			tmptri[2].setneighbor(_element[_nowtri].neighbors[(nownode + 1) % 3], _nowtri, _element.size() + 1);
-			tmptri[2].sides[0] = _element[_nowtri].sides[(nownode + 1) % 3];
+			tmptri[2].setnode(_nodenum, _elements[_nowtri].nodes[(nownode + 2) % 3], _elements[_nowtri].nodes[nownode]);
+			tmptri[2].setneighbor(_elements[_nowtri].neighbors[(nownode + 1) % 3], _nowtri, _elements.size() + 1);
+			tmptri[2].sides[0] = _elements[_nowtri].sides[(nownode + 1) % 3];
 
-			tmptri[3].setnode(_nodenum, _element[neitri].nodes[neinode], _element[_nowtri].nodes[(nownode + 2) % 3]);
-			tmptri[3].setneighbor(_element[neitri].neighbors[(neinode + 2) % 3], _element.size(), neitri);
-			tmptri[3].sides[0] = _element[neitri].sides[(neinode + 2) % 3];
+			tmptri[3].setnode(_nodenum, _elements[neitri].nodes[neinode], _elements[_nowtri].nodes[(nownode + 2) % 3]);
+			tmptri[3].setneighbor(_elements[neitri].neighbors[(neinode + 2) % 3], _elements.size(), neitri);
+			tmptri[3].sides[0] = _elements[neitri].sides[(neinode + 2) % 3];
 
-			int nei1 = _element[_nowtri].neighbors[(nownode + 1) % 3];
+			int nei1 = _elements[_nowtri].neighbors[(nownode + 1) % 3];
 			if (nei1 != -1) {
-				_element[nei1].neighbors[_element[nei1].oppositenode(_nowtri)] = _element.size();
+				_elements[nei1].neighbors[_elements[nei1].oppositenode(_nowtri)] = _elements.size();
 			}
 
-			int nei2 = _element[neitri].neighbors[(neinode + 2) % 3];
+			int nei2 = _elements[neitri].neighbors[(neinode + 2) % 3];
 			if (nei2 != -1) {
-				_element[nei2].neighbors[_element[nei2].oppositenode(neitri)] = _element.size() + 1;
+				_elements[nei2].neighbors[_elements[nei2].oppositenode(neitri)] = _elements.size() + 1;
 			}
 
 			if (tmptri[0].nodes[1] == _nodenumm1 || tmptri[0].nodes[1] == _nodenump1) {
@@ -160,44 +160,44 @@ namespace DelaunayPAN{
 				tmptri[1].sides[1] = true;
 			}
 
-			if (_element[_nowtri].sides[nownode] == true) {
+			if (_elements[_nowtri].sides[nownode] == true) {
 				tmptri[0].sides[1] = true;
 				tmptri[1].sides[2] = true;
 				tmptri[2].sides[2] = true;
 				tmptri[3].sides[1] = true;
-				_node[_nodenum].type = true;
+				_nodes[_nodenum].type = true;
 			}
 
-			tmptri[0].getangle(_node);
-			tmptri[1].getangle(_node);
-			tmptri[2].getangle(_node);
-			tmptri[3].getangle(_node);
+			tmptri[0].getangle(_nodes);
+			tmptri[1].getangle(_nodes);
+			tmptri[2].getangle(_nodes);
+			tmptri[3].getangle(_nodes);
 
 			stack.push_back(_nowtri);
 			stack.push_back(neitri);
-			stack.push_back(_element.size());
-			stack.push_back(_element.size() + 1);
+			stack.push_back(_elements.size());
+			stack.push_back(_elements.size() + 1);
 
-			_element[_nowtri].copy(tmptri[0]);
-			_element[neitri].copy(tmptri[1]);
-			_element.push_back(tmptri[2]);
-			_element.push_back(tmptri[3]);
+			_elements[_nowtri].copy(tmptri[0]);
+			_elements[neitri].copy(tmptri[1]);
+			_elements.push_back(tmptri[2]);
+			_elements.push_back(tmptri[3]);
 		}
 		
 		else {
-			std::vector<Element<T> > tmptri(2);
+			std::array<Element<T>, 2> tmptri;
 
-			tmptri[0].setnode(_nodenum, _element[_nowtri].nodes[nownode], _element[_nowtri].nodes[(nownode + 1) % 3]);
-			tmptri[0].setneighbor(_element[_nowtri].neighbors[(nownode + 2) % 3], -1, _element.size());
-			tmptri[0].setside(_element[_nowtri].sides[(nownode + 2) % 3], false, false);
+			tmptri[0].setnode(_nodenum, _elements[_nowtri].nodes[nownode], _elements[_nowtri].nodes[(nownode + 1) % 3]);
+			tmptri[0].setneighbor(_elements[_nowtri].neighbors[(nownode + 2) % 3], -1, _elements.size());
+			tmptri[0].setside(_elements[_nowtri].sides[(nownode + 2) % 3], false, false);
 
-			tmptri[1].setnode(_nodenum, _element[_nowtri].nodes[(nownode + 2) % 3], _element[_nowtri].nodes[nownode]);
-			tmptri[1].setneighbor(_element[_nowtri].neighbors[(nownode + 1) % 3], _nowtri, -1);
-			tmptri[1].setside(_element[_nowtri].sides[(nownode + 1) % 3], false, false);
+			tmptri[1].setnode(_nodenum, _elements[_nowtri].nodes[(nownode + 2) % 3], _elements[_nowtri].nodes[nownode]);
+			tmptri[1].setneighbor(_elements[_nowtri].neighbors[(nownode + 1) % 3], _nowtri, -1);
+			tmptri[1].setside(_elements[_nowtri].sides[(nownode + 1) % 3], false, false);
 
-			int nei1 = _element[_nowtri].neighbors[(nownode + 1) % 3];
+			int nei1 = _elements[_nowtri].neighbors[(nownode + 1) % 3];
 			if (nei1 != -1) {
-				_element[nei1].neighbors[_element[nei1].oppositenode(_nowtri)] = _element.size();
+				_elements[nei1].neighbors[_elements[nei1].oppositenode(_nowtri)] = _elements.size();
 			}
 
 			if (tmptri[0].nodes[1] == _nodenumm1 || tmptri[0].nodes[1] == _nodenump1) {
@@ -211,70 +211,70 @@ namespace DelaunayPAN{
 				tmptri[1].sides[2] = true;
 			}
 
-			if (_element[_nowtri].sides[nownode] == true) {
+			if (_elements[_nowtri].sides[nownode] == true) {
 				tmptri[0].sides[1] = true;
 				tmptri[1].sides[2] = true;
-				_node[_nodenum].type = true;
+				_nodes[_nodenum].type = true;
 			}
 
-			tmptri[0].getangle(_node);
-			tmptri[1].getangle(_node);
+			tmptri[0].getangle(_nodes);
+			tmptri[1].getangle(_nodes);
 
 			stack.push_back(_nowtri);
-			stack.push_back(_element.size());
+			stack.push_back(_elements.size());
 
-			_element[_nowtri].copy(tmptri[0]);
-			_element.push_back(tmptri[1]);
+			_elements[_nowtri].copy(tmptri[0]);
+			_elements.push_back(tmptri[1]);
 		}
 		
-		swapping(_node, _element, stack, _nodenump1, _nodenumm1);
+		swapping(_nodes, _elements, stack, _nodenump1, _nodenumm1);
 	}
 
 
 	template<class T>
-	void swapping(std::vector<Node<T> > &_node, std::vector<Element<T> > &_element, std::vector<int> &_stack, int _nodenump1, int _nodenumm1) {
+	void swapping(std::vector<Node<T> >& _nodes, std::vector<Element<T> >& _elements, std::vector<int> &_stack, int _nodenump1, int _nodenumm1) {
 		while (_stack.size() > 0) {
 			int nowstack = _stack[_stack.size() - 1];
 			_stack.pop_back();
 			
-			int neighbortri = _element[nowstack].neighbors[0];
+			int neighbortri = _elements[nowstack].neighbors[0];
 			
-			if (neighbortri >= 0 && _element[neighbortri].active == true) {
-				int neighbornode = _element[neighbortri].oppositenode(nowstack);
-				T r0 = _node[_element[nowstack].nodes[1]].distance(_node[_element[nowstack].nodes[2]]);
-				T r1 = _node[_element[nowstack].nodes[0]].distance(_node[_element[neighbortri].nodes[neighbornode]]);
+			if (neighbortri >= 0 && _elements[neighbortri].active == true) {
+				int neighbornode = _elements[neighbortri].oppositenode(nowstack);
+				T r0 = _nodes[_elements[nowstack].nodes[1]].distance(_nodes[_elements[nowstack].nodes[2]]);
+				T r1 = _nodes[_elements[nowstack].nodes[0]].distance(_nodes[_elements[neighbortri].nodes[neighbornode]]);
 				if (r0 > r1
-					&& _element[nowstack].inouton(_element[neighbortri].nodes[neighbornode], _node) == -1
-					&& _element[neighbortri].inouton(_element[nowstack].nodes[0], _node) == -(neighbornode + 1)
-					&& _element[nowstack].sides[0] == false) {
+					&& _elements[nowstack].inouton(_elements[neighbortri].nodes[neighbornode], _nodes) == -1
+					&& _elements[neighbortri].inouton(_elements[nowstack].nodes[0], _nodes) == -(neighbornode + 1)
+					&& _elements[nowstack].sides[0] == false) {
 					
-					Element<T> tmpelement = Element<T>(_element[neighbortri]);
+					Element<T> tmpelement = Element<T>(_elements[neighbortri]);
 
 					int neighbor1 = tmpelement.neighbors[(neighbornode + 1) % 3];
 					if (neighbor1 >= 0) {
-						_element[neighbor1].neighbors[_element[neighbor1].oppositenode(neighbortri)] = nowstack;
+						_elements[neighbor1].neighbors[_elements[neighbor1].oppositenode(neighbortri)] = nowstack;
 					}
 
-					int neighbor2 = _element[nowstack].neighbors[1];
+					int neighbor2 = _elements[nowstack].neighbors[1];
 					if (neighbor2 >= 0) {
-						_element[neighbor2].neighbors[_element[neighbor2].oppositenode(nowstack)] = neighbortri;
+						_elements[neighbor2].neighbors[_elements[neighbor2].oppositenode(nowstack)] = neighbortri;
 					}
 
-					_element[neighbortri].setside(tmpelement.sides[(neighbornode + 2) % 3], _element[nowstack].sides[1], false);
-					_element[neighbortri].setnode(_element[nowstack].nodes[0], tmpelement.nodes[neighbornode], _element[nowstack].nodes[2]);
-					_element[neighbortri].setneighbor(tmpelement.neighbors[(neighbornode + 2) % 3], _element[nowstack].neighbors[1], nowstack);
+					_elements[neighbortri].setside(tmpelement.sides[(neighbornode + 2) % 3], _elements[nowstack].sides[1], false);
+					_elements[neighbortri].setnode(_elements[nowstack].nodes[0], tmpelement.nodes[neighbornode], _elements[nowstack].nodes[2]);
+					_elements[neighbortri].setneighbor(tmpelement.neighbors[(neighbornode + 2) % 3], _elements[nowstack].neighbors[1], nowstack);
 
-					_element[nowstack].setside(tmpelement.sides[(neighbornode + 1) % 3], false, _element[nowstack].sides[2]);
-					_element[nowstack].setnode(_element[nowstack].nodes[0], _element[nowstack].nodes[1], tmpelement.nodes[neighbornode]);
-					_element[nowstack].setneighbor(tmpelement.neighbors[(neighbornode + 1) % 3], neighbortri, _element[nowstack].neighbors[2]);
+					_elements[nowstack].setside(tmpelement.sides[(neighbornode + 1) % 3], false, _elements[nowstack].sides[2]);
+					_elements[nowstack].setnode(_elements[nowstack].nodes[0], _elements[nowstack].nodes[1], tmpelement.nodes[neighbornode]);
+					_elements[nowstack].setneighbor(tmpelement.neighbors[(neighbornode + 1) % 3], neighbortri, _elements[nowstack].neighbors[2]);
 
-					if (_element[nowstack].nodes[2] == _nodenumm1 || _element[nowstack].nodes[2] == _nodenump1) {
-						_element[nowstack].sides[1] = true;
-						_element[neighbortri].sides[2] = true;
+					if (_elements[nowstack].nodes[2] == _nodenumm1 || _elements[nowstack].nodes[2] == _nodenump1) {
+						_elements[nowstack].sides[1] = true;
+						_elements[neighbortri].sides[2] = true;
 					}
 
-					_element[nowstack].getangle(_node);
-					_element[neighbortri].getangle(_node);
+					_elements[nowstack].getangle(_nodes);
+					_elements[neighbortri].getangle(_nodes);
 
 					_stack.push_back(nowstack);
 					_stack.push_back(neighbortri);
@@ -285,7 +285,7 @@ namespace DelaunayPAN{
 
 
 	template<class T>
-	void getsupertriangle(std::vector<Node<T> > &_nodes, std::vector<Element<T> > &_elements) {
+	void getsupertriangle(std::vector<Node<T> >& _nodes, std::vector<Element<T> >& _elements) {
 		//Get distance maximam
 		T rmax = T();
 		Node<T> o;
@@ -305,11 +305,11 @@ namespace DelaunayPAN{
 
 
 	template<class T>
-	void deletesupertriangle(std::vector<Node<T> > &_node, std::vector<Element<T> > &_element) {
-		for (int i = _element.size() - 1; i >= 0; i--) {
-			for (const auto& node : _element[i].nodes) {
-				if (node == _node.size() - 1 || node == _node.size() - 2 || node == _node.size() - 3) {
-					_element[i].active = false;
+	void deletesupertriangle(std::vector<Node<T> >& _nodes, std::vector<Element<T> >& _elements) {
+		for (int i = _elements.size() - 1; i >= 0; i--) {
+			for (const auto& node : _elements[i].nodes) {
+				if (node == _nodes.size() - 1 || node == _nodes.size() - 2 || node == _nodes.size() - 3) {
+					_elements[i].active = false;
 					break;
 				}
 			}
@@ -411,15 +411,15 @@ namespace DelaunayPAN{
 
 
 	template<class T>
-	void sortelement(std::vector<Element<T> > &_element) {
-		for (int i = 0; i < _element.size(); i++) {
+	void sortelement(std::vector<Element<T> >& _elements) {
+		for (int i = 0; i < _elements.size(); i++) {
 			for (int j = 0; j < 3; j++) {
-				_element[i].neighbors[j] = -1;
-				for (int k = 0; k < _element.size(); k++) {
-					if (i != k && ((_element[i].nodes[(j + 1) % 3] == _element[k].nodes[0] && _element[i].nodes[(j + 2) % 3] == _element[k].nodes[2])
-						|| (_element[i].nodes[(j + 1) % 3] == _element[k].nodes[1] && _element[i].nodes[(j + 2) % 3] == _element[k].nodes[0])
-						|| (_element[i].nodes[(j + 1) % 3] == _element[k].nodes[2] && _element[i].nodes[(j + 2) % 3] == _element[k].nodes[1]))) {
-						_element[i].neighbors[j] = k;
+				_elements[i].neighbors[j] = -1;
+				for (int k = 0; k < _elements.size(); k++) {
+					if (i != k && ((_elements[i].nodes[(j + 1) % 3] == _elements[k].nodes[0] && _elements[i].nodes[(j + 2) % 3] == _elements[k].nodes[2])
+						|| (_elements[i].nodes[(j + 1) % 3] == _elements[k].nodes[1] && _elements[i].nodes[(j + 2) % 3] == _elements[k].nodes[0])
+						|| (_elements[i].nodes[(j + 1) % 3] == _elements[k].nodes[2] && _elements[i].nodes[(j + 2) % 3] == _elements[k].nodes[1]))) {
+						_elements[i].neighbors[j] = k;
 						break;
 					}
 				}
@@ -429,16 +429,16 @@ namespace DelaunayPAN{
 
 
 	template<class T>
-	void getinternalelement(std::vector<Node<T> > &_node, std::vector<Element<T> > &_element, T _maxside) {
+	void getinternalelement(std::vector<Node<T> >& _nodes, std::vector<Element<T> >& _elements, T _maxside) {
 		//�ӂ̒����v�f�𕪊�
 		for (int i = 0; i < ADDITIONALNODENUM0; i++) {
 			//�ǉ�����ߓ_�𐶐�
-			T maxside = _node[_element[0].nodes[0]].distance(_node[_element[0].nodes[1]]);
+			T maxside = _nodes[_elements[0].nodes[0]].distance(_nodes[_elements[0].nodes[1]]);
 			int maxelement = 0, maxnode = 0;
-			for (int j = 0; j < _element.size(); j++) {
+			for (int j = 0; j < _elements.size(); j++) {
 				for (int k = 0; k < 3; k++) {
-					if (maxside < _node[_element[j].nodes[(k + 1) % 3]].distance(_node[_element[j].nodes[(k + 2) % 3]]) && _element[j].active == true) {
-						maxside = _node[_element[j].nodes[(k + 1) % 3]].distance(_node[_element[j].nodes[(k + 2) % 3]]);
+					if (maxside < _nodes[_elements[j].nodes[(k + 1) % 3]].distance(_nodes[_elements[j].nodes[(k + 2) % 3]]) && _elements[j].active == true) {
+						maxside = _nodes[_elements[j].nodes[(k + 1) % 3]].distance(_nodes[_elements[j].nodes[(k + 2) % 3]]);
 						maxelement = j;
 						maxnode = k;
 					}
@@ -449,39 +449,39 @@ namespace DelaunayPAN{
 				break;
 			}
 
-			_node.push_back(Node<T>(
-				(_node[_element[maxelement].nodes[(maxnode + 1) % 3]].x + _node[_element[maxelement].nodes[(maxnode + 2) % 3]].x) / 2.0,
-				(_node[_element[maxelement].nodes[(maxnode + 1) % 3]].y + _node[_element[maxelement].nodes[(maxnode + 2) % 3]].y) / 2.0
+			_nodes.push_back(Node<T>(
+				(_nodes[_elements[maxelement].nodes[(maxnode + 1) % 3]].x + _nodes[_elements[maxelement].nodes[(maxnode + 2) % 3]].x) / 2.0,
+				(_nodes[_elements[maxelement].nodes[(maxnode + 1) % 3]].y + _nodes[_elements[maxelement].nodes[(maxnode + 2) % 3]].y) / 2.0
 			));
 
-			getelementon(_node, _element, maxelement, maxnode, -2, _node.size() - 1, -2);
+			getelementon(_nodes, _elements, maxelement, maxnode, -2, _nodes.size() - 1, -2);
 		}
 	}
 
 
 	template<class T>
-	void deleteelement(std::vector<Element<T> > &_element) {
-		for (int i = _element.size() - 1; i >= 0; i--) {
-			if (_element[i].active == false || _element[i].check == false) {
-				_element.erase(_element.begin() + i);
+	void deleteelement(std::vector<Element<T> >& _elements) {
+		for (int i = _elements.size() - 1; i >= 0; i--) {
+			if (_elements[i].active == false || _elements[i].check == false) {
+				_elements.erase(_elements.begin() + i);
 			}
 		}
 	}
 
 
 	template<class T>
-	void laplacian(std::vector<Node<T> > &_node, std::vector<Element<T> > &_element, int _maxnum) {
+	void laplacian(std::vector<Node<T> >& _nodes, std::vector<Element<T> >& _elements, int _maxnum) {
 		std::vector<int> logstack;
 		int logstacknum = 100;			
 		for (int i = 0; i < _maxnum; i++) {
 			T angmax = 0.0;
 			int elemax = -1, nodemax = -1;
-			for (int j = 0; j < _element.size(); j++) {
+			for (int j = 0; j < _elements.size(); j++) {
 				for (int k = 0; k < 3; k++) {
-					if (angmax < fabs(60.0 - _element[j].angles[k]) && _node[_element[j].nodes[k]].type == false) {
-						angmax = fabs(60.0 - _element[j].angles[k]);
+					if (angmax < fabs(60.0 - _elements[j].angles[k]) && _nodes[_elements[j].nodes[k]].type == false) {
+						angmax = fabs(60.0 - _elements[j].angles[k]);
 						elemax = j;
-						nodemax = _element[j].nodes[k];
+						nodemax = _elements[j].nodes[k];
 					}
 				}
 			}
@@ -489,10 +489,10 @@ namespace DelaunayPAN{
 				break;
 			}
 			
-			_node[nodemax].type = true;
+			_nodes[nodemax].type = true;
 			logstack.push_back(nodemax);
 			if (logstack.size() > logstacknum) {
-				_node[logstack[0]].type = false;
+				_nodes[logstack[0]].type = false;
 				logstack.erase(logstack.begin());
 			}
 
@@ -500,24 +500,24 @@ namespace DelaunayPAN{
 			int nowtri = elemax;
 			do{
 				stack.push_back(nowtri);
-				nowtri = _element[nowtri].neighbors[(_element[nowtri].nodeorder(nodemax) + 1) % 3];
+				nowtri = _elements[nowtri].neighbors[(_elements[nowtri].nodeorder(nodemax) + 1) % 3];
 			}while (nowtri != elemax);
 
 			T xdash = T(), ydash = T();
 			for (auto j : stack) {
-				xdash += _node[_element[j].nodes[(_element[j].nodeorder(nodemax) + 1) % 3]].x 
-					+ _node[_element[j].nodes[(_element[j].nodeorder(nodemax) + 1) % 3]].x;
-				ydash += _node[_element[j].nodes[(_element[j].nodeorder(nodemax) + 1) % 3]].y
-					+ _node[_element[j].nodes[(_element[j].nodeorder(nodemax) + 1) % 3]].y;
+				xdash += _nodes[_elements[j].nodes[(_elements[j].nodeorder(nodemax) + 1) % 3]].x 
+					+ _nodes[_elements[j].nodes[(_elements[j].nodeorder(nodemax) + 1) % 3]].x;
+				ydash += _nodes[_elements[j].nodes[(_elements[j].nodeorder(nodemax) + 1) % 3]].y
+					+ _nodes[_elements[j].nodes[(_elements[j].nodeorder(nodemax) + 1) % 3]].y;
 			}
 			xdash /= 2.0*(T)stack.size();
 			ydash /= 2.0*(T)stack.size();
 
-			_node[nodemax].x = xdash;
-			_node[nodemax].y = ydash;
+			_nodes[nodemax].x = xdash;
+			_nodes[nodemax].y = ydash;
 
 			for (auto j : stack) {
-				_element[j].getangle(_node);
+				_elements[j].getangle(_nodes);
 			}
 		}
 	}
