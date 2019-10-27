@@ -41,15 +41,15 @@ namespace DelaunayPAN{
 		deleteelement(_elements);
 
 		//----------Sort Elements----------
-		//sortelement(_elements);
+		sortelement(_elements);
 
-		/*if (_maxsize > 0) {
+		if (_maxsize > 0) {
 			//----------subdivide----------
 			getinternalelement(_nodes, _elements, _maxsize);
 
 			//----------Laplacian smoothing----------
 			laplacian(_nodes, _elements, _laplaciannum);
-		}*/
+		}
 	}
 
 

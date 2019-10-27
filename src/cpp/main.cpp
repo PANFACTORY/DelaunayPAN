@@ -44,10 +44,10 @@ using namespace DelaunayPAN;
 //*****************************************************************************
 //DXFファイル出力
 //*****************************************************************************
-void exportdxf(vector<Element<double> > _element, vector<Node<double> > _node) {
+void exportdxf(vector<Element<double> > _element, vector<Node<double> > _node, string _fname) {
 	double magx = 50.0, magy = 50.0, offsetx = 100.0, offsety = 100.0;
 	
-    ofstream fout("Mesh.dxf");
+    ofstream fout(_fname);
 
     fout << "0\nSECTION\n2\nHEADER\n9\n$ACADVER\n1\nAC1009\n0\nENDSEC\n0\nSECTION\n2\nTABLES\n0\nENDSEC\n0\nSECTION\n2\nBLOCKS\n0\nENDSEC\n0\nSECTION\n2\nENTITIES\n";
     for (int i = 0; i < _element.size(); i++) {
@@ -176,11 +176,11 @@ int main() {
 	//----------DelaunayTriangulationの実行----------
 	vector<Element<double> > element;					//要素
 	clock_t ts = clock();
-	delaunaymain(node, element, boundary, 0.5, 1000);
+	delaunaymain(node, element, boundary, 0.05, 1000);
 	clock_t te = clock();
 	cout << "\ntime cost:\t" << (double)(te - ts) / CLOCKS_PER_SEC << "sec.\n";
 	//----------結果の表示----------
 	cout << element.size() << "\n";
 	showelements(element, node);
-	exportdxf(element, node);
+	exportdxf(element, node, model_path + "Mesh.dxf");
 }
