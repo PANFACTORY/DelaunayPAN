@@ -9,6 +9,7 @@
 #pragma once
 #include <iostream>
 #include <vector>
+#include <array>
 #define _USE_MATH_DEFINES
 #include <cmath>
 
@@ -317,52 +318,47 @@ namespace DelaunayPAN{
 
 
 	template<class T>
-	void getboundary(std::vector<Node<T> > &_node, std::vector<Element<T> > &_element, Boundary _boundary) {
+	void getboundary(std::vector<Node<T> >& _nodes, std::vector<Element<T> >& _elements, Boundary _boundary) {
 		for (int i = 0; i < _boundary.nodelists.size(); i++) {
-			//.....�܂��ݒu����Ă��Ȃ��Ƃ�.....
-			if (_node[_boundary.nodelists[i]].set == false) {
-				_node[_boundary.nodelists[i]].set = true;
+			//.....Add nodes on boundary into district.....
+			if (_nodes[_boundary.nodelists[i]].set == false) {
+				_nodes[_boundary.nodelists[i]].set = true;
 				int nowtri = 0;
-				if (_element.size() > 0) {
-					nowtri = _element.size() - 1;
+				if (_elements.size() > 0) {
+					nowtri = _elements.size() - 1;
 				}
-				_node[_boundary.nodelists[i]].type = true;
+				_nodes[_boundary.nodelists[i]].type = true;
 
-				//.....��܎O�p�`�̒T��.....
-				for (int j = 0; j < _element.size(); j++) {
-					int pos = _element[nowtri].inouton(_boundary.nodelists[i], _node);
-					//�v�f�O�ɂ��鎞
-					if (pos < 0 || _element[nowtri].active == false) {
-						if (_element[nowtri].neighbors[abs(pos) - 1] >= 0) {
-							nowtri = _element[nowtri].neighbors[abs(pos) - 1];
-						}
-						else {
+				//.....Search element in which node is.....
+				for (int j = 0; j < _elements.size(); j++) {
+					int pos = _elements[nowtri].inouton(_boundary.nodelists[i], _nodes);
+					//if not in or out
+					if (pos < 0 || _elements[nowtri].active == false) {
+						if (_elements[nowtri].neighbors[abs(pos) - 1] >= 0) {
+							nowtri = _elements[nowtri].neighbors[abs(pos) - 1];
+						} else {
 							std::cout << "Out of triangle Error!\n";
 						}
 					}
-					//�v�f���ɂ��鎞
+					//if in 
 					else if (pos == 0) {
 						if (i == 0) {
-							getelementin(_node, _element, nowtri, _boundary.nodelists[i + 1], _boundary.nodelists[i], -2);
-						}
-						else if (i == _boundary.nodelists.size() - 1) {
-							getelementin(_node, _element, nowtri, _boundary.nodelists[0], _boundary.nodelists[i], _boundary.nodelists[i - 1]);
-						}
-						else {
-							getelementin(_node, _element, nowtri, _boundary.nodelists[i + 1], _boundary.nodelists[i], _boundary.nodelists[i - 1]);
+							getelementin(_nodes, _elements, nowtri, _boundary.nodelists[i + 1], _boundary.nodelists[i], -2);
+						} else if (i == _boundary.nodelists.size() - 1) {
+							getelementin(_nodes, _elements, nowtri, _boundary.nodelists[0], _boundary.nodelists[i], _boundary.nodelists[i - 1]);
+						} else {
+							getelementin(_nodes, _elements, nowtri, _boundary.nodelists[i + 1], _boundary.nodelists[i], _boundary.nodelists[i - 1]);
 						}
 						break;
 					}
-					//�ӏ�ɂ��鎞
+					//if on
 					else {
 						if (i == 0) {
-							getelementon(_node, _element, nowtri, pos - 1, _boundary.nodelists[i + 1], _boundary.nodelists[i], -2);
-						}
-						else if (i == _boundary.nodelists.size() - 1) {
-							getelementon(_node, _element, nowtri, pos - 1, _boundary.nodelists[0], _boundary.nodelists[i], _boundary.nodelists[i - 1]);
-						}
-						else {
-							getelementon(_node, _element, nowtri, pos - 1, _boundary.nodelists[i + 1], _boundary.nodelists[i], _boundary.nodelists[i - 1]);
+							getelementon(_nodes, _elements, nowtri, pos - 1, _boundary.nodelists[i + 1], _boundary.nodelists[i], -2);
+						} else if (i == _boundary.nodelists.size() - 1) {
+							getelementon(_nodes, _elements, nowtri, pos - 1, _boundary.nodelists[0], _boundary.nodelists[i], _boundary.nodelists[i - 1]);
+						} else {
+							getelementon(_nodes, _elements, nowtri, pos - 1, _boundary.nodelists[i + 1], _boundary.nodelists[i], _boundary.nodelists[i - 1]);
 						}
 						break;
 					}
@@ -373,38 +369,35 @@ namespace DelaunayPAN{
 
 
 	template<class T>
-	void deactivate(std::vector<Node<T> > &_node, std::vector<Element<T> > &_element, Boundary _boundary) {
-		for (int i = _element.size() - 1; i >= 0; i--) {
-			int nodeorder[3];
-			for (int j = 0; j < 3; j++) {
-				nodeorder[j] = _boundary.order(_element[i].nodes[j]);
-			}
-
-			if (_boundary.type == true) {
-				if (_element[i].check == false) {
-					if (nodeorder[0] >= 0 && nodeorder[1] >= 0 && nodeorder[2] >= 0) {
-						_element[i].check = true;
-						if ((nodeorder[0] < nodeorder[1] && nodeorder[1] < nodeorder[2])
-							|| (nodeorder[1] < nodeorder[2] && nodeorder[2] < nodeorder[0])
-							|| (nodeorder[2] < nodeorder[0] && nodeorder[0] < nodeorder[1])) {
-							_element[i].active = false;
+	void deactivate(std::vector<Node<T> >& _nodes, std::vector<Element<T> >& _elements, Boundary _boundary) {
+		for (auto& element : _elements) {
+			if(element.check == false){
+				//.....get order of node on boundary.....
+				std::array<int, 3> nodeorders{ _boundary.order(element.nodes[0]), _boundary.order(element.nodes[1]), _boundary.order(element.nodes[2]) };
+				
+				//.....external boundary.....
+				if (_boundary.type == true) {
+					if (nodeorders[0] >= 0 && nodeorders[1] >= 0 && nodeorders[2] >= 0) {
+						element.check = true;
+						if ((nodeorders[0] < nodeorders[1] && nodeorders[1] < nodeorders[2])
+							|| (nodeorders[1] < nodeorders[2] && nodeorders[2] < nodeorders[0])
+							|| (nodeorders[2] < nodeorders[0] && nodeorders[0] < nodeorders[1])) {
+							element.active = false;
 						}
 					}
 				}
-			}
-			else {
-				if (_element[i].check == false) {
-					if ((nodeorder[0] < 0 && nodeorder[1] >= 0 && nodeorder[2] >= 0)
-						|| (nodeorder[0] >= 0 && nodeorder[1] < 0 && nodeorder[2] >= 0)
-						|| (nodeorder[0] >= 0 && nodeorder[1] >= 0 && nodeorder[2] < 0)
-						|| (nodeorder[0] < 0 && nodeorder[1] < 0 && nodeorder[2] >= 0)
-						|| (nodeorder[0] >= 0 && nodeorder[1] < 0 && nodeorder[2] < 0)
-						|| (nodeorder[0] < 0 && nodeorder[1] >= 0 && nodeorder[2] < 0)) {
-						_element[i].check = true;
-					}
-					else if (nodeorder[0] >= 0 && nodeorder[1] >= 0 && nodeorder[2] >= 0) {
-						_element[i].check = true;
-						_element[i].active = false;
+				//.....internal boundary.....
+				else {
+					if ((nodeorders[0] < 0 && nodeorders[1] >= 0 && nodeorders[2] >= 0)
+						|| (nodeorders[0] >= 0 && nodeorders[1] < 0 && nodeorders[2] >= 0)
+						|| (nodeorders[0] >= 0 && nodeorders[1] >= 0 && nodeorders[2] < 0)
+						|| (nodeorders[0] < 0 && nodeorders[1] < 0 && nodeorders[2] >= 0)
+						|| (nodeorders[0] >= 0 && nodeorders[1] < 0 && nodeorders[2] < 0)
+						|| (nodeorders[0] < 0 && nodeorders[1] >= 0 && nodeorders[2] < 0)) {
+						element.check = true;
+					} else if (nodeorders[0] >= 0 && nodeorders[1] >= 0 && nodeorders[2] >= 0) {
+						element.check = true;
+						element.active = false;
 					}
 				}
 			}
