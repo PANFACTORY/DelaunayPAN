@@ -228,10 +228,12 @@ namespace DelaunayPAN{
 				int neighbornode = _elements[neighbortri].oppositenode(nowstack);
 				T r0 = _nodes[_elements[nowstack].nodes[1]].distance(_nodes[_elements[nowstack].nodes[2]]);
 				T r1 = _nodes[_elements[nowstack].nodes[0]].distance(_nodes[_elements[neighbortri].nodes[neighbornode]]);
-				if (r0 > r1
+				if ((r0 > r1
 					&& _elements[nowstack].inouton(_elements[neighbortri].nodes[neighbornode], _nodes) == -1
 					&& _elements[neighbortri].inouton(_elements[nowstack].nodes[0], _nodes) == -(neighbornode + 1)
-					&& _elements[nowstack].sides[0] == false) {
+					&& _elements[nowstack].sides[0] == false)
+					|| (_elements[neighbortri].nodes[neighbornode] == _nodenump1)
+					|| (_elements[neighbortri].nodes[neighbornode] == _nodenumm1)) {
 					
 					Element<T> tmpelement = Element<T>(_elements[neighbortri]);
 
