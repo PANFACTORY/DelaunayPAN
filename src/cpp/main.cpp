@@ -159,22 +159,24 @@ void importboundary(vector<Boundary> &_boundary, string _fname, bool _type) {
 //メイン処理
 //*****************************************************************************
 int main() {
+	string model_path = "sample/Model1/";
+
 	//----------節点座標の取り込み----------
 	vector<Node<double> > node;							//節点
-	importnode(node, "sample/Model1/nodes.dat");
+	importnode(node, model_path + "nodes.dat");
 
 	//----------境界の取り込み----------
 	vector<Boundary> boundary;					//境界
-	importboundary(boundary, "sample/Model1/externalboundary0.dat", true);
-	importboundary(boundary, "sample/Model1/externalboundary1.dat", true);
-	importboundary(boundary, "sample/Model1/externalboundary2.dat", true);
-	importboundary(boundary, "sample/Model1/internalboundary0.dat", false);
-	importboundary(boundary, "sample/Model1/internalboundary1.dat", false);
+	importboundary(boundary, model_path + "externalboundary0.dat", true);
+	importboundary(boundary, model_path + "externalboundary1.dat", true);
+	importboundary(boundary, model_path + "externalboundary2.dat", true);
+	importboundary(boundary, model_path + "internalboundary0.dat", false);
+	importboundary(boundary, model_path + "internalboundary1.dat", false);
 
 	//----------DelaunayTriangulationの実行----------
 	vector<Element<double> > element;					//要素
 	clock_t ts = clock();
-	delaunaymain(node, element, boundary, 0.05, 1000);
+	delaunaymain(node, element, boundary, 0.5, 1000);
 	clock_t te = clock();
 	cout << "\ntime cost:\t" << (double)(te - ts) / CLOCKS_PER_SEC << "sec.\n";
 	//----------結果の表示----------

@@ -41,15 +41,15 @@ namespace DelaunayPAN{
 		deleteelement(_elements);
 
 		//----------Sort Elements----------
-		sortelement(_elements);
+		//sortelement(_elements);
 
-		if (_maxsize > 0) {
+		/*if (_maxsize > 0) {
 			//----------subdivide----------
 			getinternalelement(_nodes, _elements, _maxsize);
 
 			//----------Laplacian smoothing----------
 			laplacian(_nodes, _elements, _laplaciannum);
-		}
+		}*/
 	}
 
 
@@ -388,6 +388,7 @@ namespace DelaunayPAN{
 				}
 				//.....internal boundary.....
 				else {
+					//.....some nodes are on other boundary.....
 					if ((nodeorders[0] < 0 && nodeorders[1] >= 0 && nodeorders[2] >= 0)
 						|| (nodeorders[0] >= 0 && nodeorders[1] < 0 && nodeorders[2] >= 0)
 						|| (nodeorders[0] >= 0 && nodeorders[1] >= 0 && nodeorders[2] < 0)
@@ -397,7 +398,11 @@ namespace DelaunayPAN{
 						element.check = true;
 					} else if (nodeorders[0] >= 0 && nodeorders[1] >= 0 && nodeorders[2] >= 0) {
 						element.check = true;
-						element.active = false;
+						if ((nodeorders[0] < nodeorders[1] && nodeorders[1] < nodeorders[2])
+							|| (nodeorders[1] < nodeorders[2] && nodeorders[2] < nodeorders[0])
+							|| (nodeorders[2] < nodeorders[0] && nodeorders[0] < nodeorders[1])) {
+							element.active = false;
+						}
 					}
 				}
 			}
