@@ -21,9 +21,9 @@ public:
 		~Node();
 		Node(T _x, T _y);
 
-		T x, y;			//cordinate vallue of Node
-		bool set;		//is set						
-		bool type;		//is on boundary
+		T x, y;					//cordinate vallue of Node
+		bool isset;				//is set						
+		bool isonboundary;		//is on boundary
 
 		T distance(const Node<T>& _node);							//get distance between other node
 		T vecpro(const Node<T>& _node0, const Node<T>& _node1);		//get innerproduct
@@ -35,8 +35,8 @@ public:
 	Node<T>::Node(){
 		this->x = T();
 		this->y = T();
-		this->set = false;
-		this->type = false;
+		this->isset = false;
+		this->isonboundary = false;
 	}
 
 
@@ -48,8 +48,8 @@ public:
 	Node<T>::Node(T _x, T _y){
 		this->x = _x;
 		this->y = _y;
-		this->set = false;
-		this->type = false;
+		this->isset = false;
+		this->isonboundary = false;
 	}
 
 

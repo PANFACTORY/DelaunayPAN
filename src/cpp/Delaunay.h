@@ -20,8 +20,8 @@
 
 
 namespace DelaunayPAN{
-	#define ADDITIONALNODENUM0	100000			//�ӂ̒����ɂ��ו�����
-
+	#define ADDITIONALNODENUM0	100000			
+	
 
 	template<class T>
 	void delaunaymain(std::vector<Node<T> > &_nodes, std::vector<Element<T> > &_elements, std::vector<Boundary> &_boundaries, T _maxsize, int _laplaciannum) {
@@ -165,7 +165,7 @@ namespace DelaunayPAN{
 				tmptri[1].sides[2] = true;
 				tmptri[2].sides[2] = true;
 				tmptri[3].sides[1] = true;
-				_nodes[_nodenum].type = true;
+				_nodes[_nodenum].isonboundary = true;
 			}
 
 			tmptri[0].getangle(_nodes);
@@ -214,7 +214,7 @@ namespace DelaunayPAN{
 			if (_elements[_nowtri].sides[nownode] == true) {
 				tmptri[0].sides[1] = true;
 				tmptri[1].sides[2] = true;
-				_nodes[_nodenum].type = true;
+				_nodes[_nodenum].isonboundary = true;
 			}
 
 			tmptri[0].getangle(_nodes);
@@ -321,13 +321,13 @@ namespace DelaunayPAN{
 	void getboundary(std::vector<Node<T> >& _nodes, std::vector<Element<T> >& _elements, Boundary _boundary) {
 		for (int i = 0; i < _boundary.nodelists.size(); i++) {
 			//.....Add nodes on boundary into district.....
-			if (_nodes[_boundary.nodelists[i]].set == false) {
-				_nodes[_boundary.nodelists[i]].set = true;
+			if (_nodes[_boundary.nodelists[i]].isset == false) {
+				_nodes[_boundary.nodelists[i]].isset = true;
 				int nowtri = 0;
 				if (_elements.size() > 0) {
 					nowtri = _elements.size() - 1;
 				}
-				_nodes[_boundary.nodelists[i]].type = true;
+				_nodes[_boundary.nodelists[i]].isonboundary = true;
 
 				//.....Search element in which node is.....
 				for (int j = 0; j < _elements.size(); j++) {
@@ -478,7 +478,7 @@ namespace DelaunayPAN{
 			int elemax = -1, nodemax = -1;
 			for (int j = 0; j < _elements.size(); j++) {
 				for (int k = 0; k < 3; k++) {
-					if (angmax < fabs(60.0 - _elements[j].angles[k]) && _nodes[_elements[j].nodes[k]].type == false) {
+					if (angmax < fabs(60.0 - _elements[j].angles[k]) && _nodes[_elements[j].nodes[k]].isonboundary == false) {
 						angmax = fabs(60.0 - _elements[j].angles[k]);
 						elemax = j;
 						nodemax = _elements[j].nodes[k];
@@ -489,10 +489,10 @@ namespace DelaunayPAN{
 				break;
 			}
 			
-			_nodes[nodemax].type = true;
+			_nodes[nodemax].isonboundary = true;
 			logstack.push_back(nodemax);
 			if (logstack.size() > logstacknum) {
-				_nodes[logstack[0]].type = false;
+				_nodes[logstack[0]].isonboundary = false;
 				logstack.erase(logstack.begin());
 			}
 
