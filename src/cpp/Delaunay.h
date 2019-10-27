@@ -58,35 +58,18 @@ namespace DelaunayPAN{
 		std::vector<int> stack;
 		std::array<Element<T>, 3> tmpelement;
 
-		tmpelement[0].sides[0] = _elements[_nowtri].sides[0];
-		tmpelement[1].sides[0] = _elements[_nowtri].sides[1];
-		tmpelement[2].sides[0] = _elements[_nowtri].sides[2];
-
-		if (_elements[_nowtri].nodes[0] == _nodenumm1 || _elements[_nowtri].nodes[0] == _nodenump1) {
-			tmpelement[1].sides[1] = true;
-			tmpelement[2].sides[2] = true;
+		for(int i = 0; i < 3; i++){
+			tmpelement[i].sides[0] = _elements[_nowtri].sides[i];
+			if (_elements[_nowtri].nodes[i] == _nodenumm1 || _elements[_nowtri].nodes[i] == _nodenump1) {
+				tmpelement[(i+1)%3].sides[1] = true;
+				tmpelement[(i+2)%3].sides[2] = true;
+			}
+			tmpelement[i].setnode(_nodenum, _elements[_nowtri].nodes[(i+1)%3], _elements[_nowtri].nodes[(i+2)%3]);
+			tmpelement[i].getangle(_nodes);
 		}
-		if (_elements[_nowtri].nodes[1] == _nodenumm1 || _elements[_nowtri].nodes[1] == _nodenump1) {
-			tmpelement[2].sides[1] = true;
-			tmpelement[0].sides[2] = true;
-		}
-		if (_elements[_nowtri].nodes[2] == _nodenumm1 || _elements[_nowtri].nodes[2] == _nodenump1) {
-			tmpelement[0].sides[1] = true;
-			tmpelement[1].sides[2] = true;
-		}
-
-		tmpelement[0].setnode(_nodenum, _elements[_nowtri].nodes[1], _elements[_nowtri].nodes[2]);
 		tmpelement[0].setneighbor(_elements[_nowtri].neighbors[0], _elements.size(), _elements.size() + 1);
-
-		tmpelement[1].setnode(_nodenum, _elements[_nowtri].nodes[2], _elements[_nowtri].nodes[0]);
 		tmpelement[1].setneighbor(_elements[_nowtri].neighbors[1], _elements.size() + 1, _nowtri);
-
-		tmpelement[2].setnode(_nodenum, _elements[_nowtri].nodes[0], _elements[_nowtri].nodes[1]);
 		tmpelement[2].setneighbor(_elements[_nowtri].neighbors[2], _nowtri, _elements.size());
-
-		tmpelement[0].getangle(_nodes);
-		tmpelement[1].getangle(_nodes);
-		tmpelement[2].getangle(_nodes);
 
 		for (int k = 0; k < 2; k++) {
 			int neighbor = _elements[_nowtri].neighbors[1 + k];
@@ -113,6 +96,7 @@ namespace DelaunayPAN{
 		int nownode = _pos;
 		int neitri = _elements[_nowtri].neighbors[nownode];
 		
+		//there is neighbor element
 		if (neitri != -1 && _elements[neitri].active == true) {
 			int neinode = _elements[neitri].oppositenode(_nowtri);
 			std::array<Element<T>, 4> tmptri;			//0:nowtri	1:neitri
@@ -184,6 +168,7 @@ namespace DelaunayPAN{
 			_elements.push_back(tmptri[3]);
 		}
 		
+		//there is not neighbor element
 		else {
 			std::array<Element<T>, 2> tmptri;
 
