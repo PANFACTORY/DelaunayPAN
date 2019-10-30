@@ -7,11 +7,11 @@
 
 
 #pragma once
+#define _USE_MATH_DEFINES
+#include <cmath>
 #include <vector>
 #include <array>
 #include <float.h>
-#define _USE_MATH_DEFINES
-#include <cmath>
 
 
 #include "Node.h"

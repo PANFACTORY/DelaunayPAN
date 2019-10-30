@@ -16,6 +16,8 @@ namespace DelaunayPAN{
 public:
 		Boundary();
 		~Boundary();
+		Boundary(std::vector<int>& _nodelists, bool _type);
+
 
 		std::vector<int> nodelists;		//list of nodes on boundary
 		bool type;						//type of boundary 
@@ -28,6 +30,12 @@ public:
 
 
 	Boundary::~Boundary(){}
+
+
+	Boundary::Boundary(std::vector<int>& _nodelists, bool _type){
+		this->nodelists = _nodelists;
+		this->type = _type;
+	}
 
 
 	int Boundary::order(int _nodenum) {
